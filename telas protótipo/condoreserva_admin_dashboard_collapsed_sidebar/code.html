@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CondoReserva Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#cebdff",
+                        "surface-container-low": "#f5f3f3",
+                        "surface-bright": "#faf9f9",
+                        "secondary": "#6c38d2",
+                        "on-surface-variant": "#494455",
+                        "on-tertiary-container": "#e5d6ff",
+                        "on-secondary-container": "#fffbff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#e8ddff",
+                        "primary-container": "#6c3ce1",
+                        "on-surface": "#1b1c1c",
+                        "on-primary-container": "#e2d6ff",
+                        "surface": "#faf9f9",
+                        "primary": "#5416c9",
+                        "on-secondary-fixed": "#24005b",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "secondary-fixed": "#e9ddff",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#591ebb",
+                        "on-primary-fixed": "#21005e",
+                        "surface-container-high": "#e9e8e8",
+                        "inverse-surface": "#303031",
+                        "inverse-primary": "#cebdff",
+                        "surface-container-highest": "#e3e2e2",
+                        "background": "#faf9f9",
+                        "surface-tint": "#6a39de",
+                        "on-tertiary-fixed-variant": "#571ab8",
+                        "on-primary-fixed-variant": "#5110c6",
+                        "on-tertiary-fixed": "#24005a",
+                        "on-secondary-fixed-variant": "#5618bc",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f2f0f0",
+                        "secondary-container": "#8555ed",
+                        "tertiary-container": "#723fd4",
+                        "outline": "#7a7486",
+                        "outline-variant": "#cbc3d7",
+                        "surface-container": "#efeded",
+                        "surface-dim": "#dbdad9",
+                        "surface-variant": "#e3e2e2",
+                        "tertiary-fixed-dim": "#d2bcff",
+                        "on-background": "#1b1c1c",
+                        "tertiary-fixed": "#eaddff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- SideNavBar (Authority: Rail Style) -->
+<aside class="fixed left-0 top-0 h-full w-[80px] z-50 bg-[#1A1A2E] flex flex-col items-center py-6 gap-4 shadow-2xl shadow-purple-900/20">
+<div class="mb-6">
+<span class="text-xl font-black text-white">CR</span>
+</div>
+<nav class="flex flex-col gap-4 w-full px-2">
+<a class="flex flex-col items-center justify-center bg-[#6C3CE1] text-white rounded-xl p-3 transition-all duration-300 scale-95 active:scale-90 group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-inter text-[10px] font-medium tracking-tight mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-inter text-[10px] font-medium tracking-tight mt-1">Reservas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-inter text-[10px] font-medium tracking-tight mt-1">Moradores</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+<span class="font-inter text-[10px] font-medium tracking-tight mt-1">Áreas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-inter text-[10px] font-medium tracking-tight mt-1">Status</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-4 w-full px-2">
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-inter text-[10px] font-medium tracking-tight mt-1">Perfil</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-inter text-[10px] font-medium tracking-tight mt-1">Ajustes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-inter text-[10px] font-medium tracking-tight mt-1">Sair</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-80px)] h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center px-8 z-40 ml-[80px] bg-surface-container-low">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl" data-icon="search">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-[#6C3CE1]/20 text-sm" placeholder="Pesquisar por morador ou reserva..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<button class="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full p-2 transition-all relative">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
+</button>
+<button class="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full p-2 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="date_range">date_range</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/20 mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="font-inter text-sm font-semibold text-on-surface leading-tight">Admin Profile</p>
+<p class="font-inter text-xs text-on-surface-variant">Gestor Principal</p>
+</div>
+<img alt="Admin User Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" data-alt="professional portrait of a middle-aged property manager in a light-colored business casual outfit with a blurred modern office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFHCT0rQcjHxggi-fzJ7ckDWP6IlSudqpgIFpgQ63xpTha7EY6SwvwEiFQEhKaGmx9Kco6PlcDuNKvCJFYEtsT3kFmRTUjQw00-7zFP-AAnUgEprQOA7kVShgFLG3lx61zB8u2O96R2fzwWBuX26NFwuOn2v255pLZLBs6Yo7ZBNVXhNzvgWKg6ftMlIbXzSiOgCYF0C5Vh_8M5SraFykI2UfSyVLRZW2ZEup4AwRLUduWDQuinHzzjhyy6xm6VKYq-e0d6tPKmow"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[80px] pt-24 pb-12 px-8 min-h-screen">
+<!-- Dashboard Header Summary -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface">Painel de Controle</h2>
+<p class="text-on-surface-variant">Bem-vindo de volta ao CondoReserva. Veja o que está acontecendo hoje.</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2 px-4 py-2 bg-primary-fixed rounded-xl">
+<span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+<span class="text-sm font-bold text-on-primary-fixed-variant">SISTEMA ONLINE</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Card 1: Visão Geral de Reservas (Large) -->
+<div class="col-span-8 bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold text-on-surface">Visão Geral de Reservas</h3>
+<button class="text-primary text-sm font-semibold hover:underline">Ver todas</button>
+</div>
+<div class="mb-8">
+<div class="flex justify-between text-sm mb-2">
+<span class="font-medium text-on-surface-variant">Ocupação do Mês</span>
+<span class="font-bold text-primary">78%</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead>
+<tr class="text-left text-xs uppercase tracking-wider text-on-surface-variant border-b border-outline-variant/10">
+<th class="pb-3 font-semibold">Morador</th>
+<th class="pb-3 font-semibold">Área</th>
+<th class="pb-3 font-semibold">Data</th>
+<th class="pb-3 font-semibold">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="group hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold text-xs">RC</div>
+<span class="text-sm font-medium">Ricardo Costa</span>
+</td>
+<td class="py-4 text-sm text-on-surface-variant">Salão de Festas</td>
+<td class="py-4 text-sm text-on-surface-variant">12 Out, 2023</td>
+<td class="py-4">
+<span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wide">Confirmado</span>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold text-xs">AM</div>
+<span class="text-sm font-medium">Ana Martins</span>
+</td>
+<td class="py-4 text-sm text-on-surface-variant">Churrasqueira A</td>
+<td class="py-4 text-sm text-on-surface-variant">14 Out, 2023</td>
+<td class="py-4">
+<span class="px-2.5 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-xs font-bold uppercase tracking-wide">Pendente</span>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed font-bold text-xs">JP</div>
+<span class="text-sm font-medium">João Pedro</span>
+</td>
+<td class="py-4 text-sm text-on-surface-variant">Quadra de Tênis</td>
+<td class="py-4 text-sm text-on-surface-variant">15 Out, 2023</td>
+<td class="py-4">
+<span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wide">Confirmado</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Card 2: Ações Pendentes (Coral Accent) -->
+<div class="col-span-4 bg-gradient-to-br from-[#FF8C6B] to-[#FFB088] rounded-2xl p-6 shadow-lg shadow-orange-200/40 text-white flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold">Ações Pendentes</h3>
+<span class="material-symbols-outlined opacity-80" data-icon="bolt">bolt</span>
+</div>
+<ul class="space-y-4">
+<li class="flex items-center justify-between bg-white/20 backdrop-blur-md rounded-xl p-4">
+<span class="text-sm font-medium">Validar reservas</span>
+<span class="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Pendente</span>
+</li>
+<li class="flex items-center justify-between bg-white/20 backdrop-blur-md rounded-xl p-4">
+<span class="text-sm font-medium">Cadastros pendentes</span>
+<span class="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Pendente</span>
+</li>
+<li class="flex items-center justify-between bg-white/20 backdrop-blur-md rounded-xl p-4">
+<span class="text-sm font-medium">Vistoria de áreas</span>
+<span class="bg-white/30 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase">Hoje</span>
+</li>
+</ul>
+</div>
+<button class="mt-8 w-full bg-white text-[#FF8C6B] font-bold py-3 rounded-xl hover:bg-orange-50 transition-colors shadow-inner">
+                Resolver Pendências
+            </button>
+</div>
+<!-- Card 3: Métricas do Condomínio (3 Purple Grid) -->
+<div class="col-span-12 grid grid-cols-3 gap-6">
+<div class="bg-primary-container rounded-2xl p-6 text-white shadow-md relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-8xl" data-icon="group">group</span>
+</div>
+<p class="text-on-primary-container text-sm font-medium mb-1">Total de Moradores</p>
+<h4 class="text-4xl font-black">124</h4>
+<p class="text-xs text-on-primary-container mt-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span>
+                    +12 este mês
+                </p>
+</div>
+<div class="bg-tertiary-container rounded-2xl p-6 text-white shadow-md relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-8xl" data-icon="domain">domain</span>
+</div>
+<p class="text-on-tertiary-container text-sm font-medium mb-1">Áreas Cadastradas</p>
+<h4 class="text-4xl font-black">08</h4>
+<p class="text-xs text-on-tertiary-container mt-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="info">info</span>
+                    Todas ativas
+                </p>
+</div>
+<div class="bg-secondary-container rounded-2xl p-6 text-white shadow-md relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-8xl" data-icon="event_available">event_available</span>
+</div>
+<p class="text-on-secondary-container text-sm font-medium mb-1">Reservas no Mês</p>
+<h4 class="text-4xl font-black">47</h4>
+<p class="text-xs text-on-secondary-container mt-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="history">history</span>
+                    Recorde histórico
+                </p>
+</div>
+</div>
+<!-- Card 4: Ocupação por Área (Modern Bar Chart) -->
+<div class="col-span-12 bg-surface-container-lowest rounded-2xl p-8 shadow-sm">
+<div class="flex justify-between items-center mb-10">
+<h3 class="text-lg font-bold text-on-surface">Ocupação por Área</h3>
+<div class="flex gap-2">
+<button class="px-4 py-1.5 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant">Semanal</button>
+<button class="px-4 py-1.5 bg-primary text-white rounded-full text-xs font-bold">Mensal</button>
+</div>
+</div>
+<div class="flex items-end justify-between h-48 gap-8 px-4">
+<!-- Churrasqueira -->
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full relative flex flex-col justify-end h-full">
+<div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+<div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[65%] relative group-hover:brightness-110 transition-all">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">65%</span>
+</div>
+</div>
+<p class="mt-4 text-sm font-medium text-on-surface-variant">Churrasqueira</p>
+</div>
+<!-- Salão de Festas -->
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full relative flex flex-col justify-end h-full">
+<div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+<div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[92%] relative group-hover:brightness-110 transition-all">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">92%</span>
+</div>
+</div>
+<p class="mt-4 text-sm font-medium text-on-surface-variant">Salão de Festas</p>
+</div>
+<!-- Quadra -->
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full relative flex flex-col justify-end h-full">
+<div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+<div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[45%] relative group-hover:brightness-110 transition-all">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">45%</span>
+</div>
+</div>
+<p class="mt-4 text-sm font-medium text-on-surface-variant">Quadra</p>
+</div>
+<!-- Piscina -->
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full relative flex flex-col justify-end h-full">
+<div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+<div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[30%] relative group-hover:brightness-110 transition-all">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">30%</span>
+</div>
+</div>
+<p class="mt-4 text-sm font-medium text-on-surface-variant">Piscina</p>
+</div>
+</div>
+</div>
+<!-- Table: Moradores Recentes -->
+<div class="col-span-12 bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold text-on-surface">Reservas Recentes</h3>
+<div class="flex gap-2">
+<button class="bg-surface-container-high p-2 rounded-lg hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<table class="w-full text-left">
+<thead>
+<tr class="text-xs font-bold text-on-surface-variant uppercase tracking-wider bg-surface-container-low">
+<th class="px-6 py-4 rounded-l-xl">Nome</th>
+<th class="px-6 py-4">Apartamento/Bloco</th>
+<th class="px-6 py-4">Área</th>
+<th class="px-6 py-4">Data</th>
+<th class="px-6 py-4 rounded-r-xl">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5 font-medium text-on-surface">Carlos Eduardo</td>
+<td class="px-6 py-5 text-on-surface-variant">Apt 102 - Bloco A</td>
+<td class="px-6 py-5 text-on-surface-variant">Piscina</td>
+<td class="px-6 py-5 text-on-surface-variant">18 Out, 2023</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Confirmado</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5 font-medium text-on-surface">Fernanda Lima</td>
+<td class="px-6 py-5 text-on-surface-variant">Apt 504 - Bloco C</td>
+<td class="px-6 py-5 text-on-surface-variant">Salão de Festas</td>
+<td class="px-6 py-5 text-on-surface-variant">20 Out, 2023</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-xs font-bold">Pendente</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5 font-medium text-on-surface">Marcelo Vieira</td>
+<td class="px-6 py-5 text-on-surface-variant">Apt 21 - Bloco B</td>
+<td class="px-6 py-5 text-on-surface-variant">Churrasqueira B</td>
+<td class="px-6 py-5 text-on-surface-variant">21 Out, 2023</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Confirmado</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5 font-medium text-on-surface">Beatriz Rocha</td>
+<td class="px-6 py-5 text-on-surface-variant">Apt 305 - Bloco A</td>
+<td class="px-6 py-5 text-on-surface-variant">Quadra</td>
+<td class="px-6 py-5 text-on-surface-variant">22 Out, 2023</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-xs font-bold">Cancelado</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</body></html>
