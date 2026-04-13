@@ -272,7 +272,19 @@ npm.cmd run db:migrate:003
 npm.cmd run db:generate
 ```
 
-### 5. Erro com enum `PENDENTE` ou `REPROVADA`
+### 5. `The table public.usuario does not exist`
+
+O banco ainda não recebeu o bootstrap inicial. Rode:
+
+```powershell
+npm.cmd run db:docker:up
+npm.cmd run db:bootstrap
+npm.cmd run db:generate
+```
+
+Se estiver usando PostgreSQL local, confirme também que a `DATABASE_URL` do `.env` aponta para o banco `condoreserva` correto.
+
+### 6. Erro com enum `PENDENTE` ou `REPROVADA`
 
 Também indica banco parcialmente migrado. Rode:
 
@@ -280,7 +292,7 @@ Também indica banco parcialmente migrado. Rode:
 npm.cmd run db:migrate:003
 ```
 
-### 6. `docker compose` não encontrado
+### 7. `docker compose` não encontrado
 
 Instale ou abra o Docker Desktop e confirme:
 
@@ -288,7 +300,7 @@ Instale ou abra o Docker Desktop e confirme:
 docker compose version
 ```
 
-### 7. Porta 5432 ocupada
+### 8. Porta 5432 ocupada
 
 Altere no `.env`:
 

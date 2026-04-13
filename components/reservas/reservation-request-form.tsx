@@ -36,8 +36,8 @@ export function ReservationRequestForm({
         <h2 className="mt-2 text-2xl font-black">Solicitar área comum</h2>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <div className="space-y-2 xl:col-span-2">
+      <div className="grid gap-5 xl:grid-cols-12">
+        <div className="space-y-2 xl:col-span-12">
           <label className="text-sm font-semibold" htmlFor="idAreaComum">
             Área comum
           </label>
@@ -52,12 +52,12 @@ export function ReservationRequestForm({
             </option>
             {areas.map((area) => (
               <option key={area.id} value={area.id}>
-                {area.nomeArea} · Capacidade {area.capacidadeMaxima} · R$ {area.valorReserva}
+                {area.nomeArea} · Capacidade {area.capacidadeMaxima}
               </option>
             ))}
           </select>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 xl:col-span-4">
           <label className="text-sm font-semibold" htmlFor="dataReserva">
             Data
           </label>
@@ -69,7 +69,7 @@ export function ReservationRequestForm({
             className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           />
         </div>
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2 xl:col-span-8">
           <div className="space-y-2">
             <label className="text-sm font-semibold" htmlFor="horaInicio">
               Início
@@ -78,7 +78,7 @@ export function ReservationRequestForm({
               id="horaInicio"
               name="horaInicio"
               type="time"
-              className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+              className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 text-sm tabular-nums outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
             />
           </div>
           <div className="space-y-2">
@@ -89,7 +89,7 @@ export function ReservationRequestForm({
               id="horaFim"
               name="horaFim"
               type="time"
-              className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+              className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 text-sm tabular-nums outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
             />
           </div>
         </div>

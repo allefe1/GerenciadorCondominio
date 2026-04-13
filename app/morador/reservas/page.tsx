@@ -6,7 +6,12 @@ import { ReservationRequestForm } from "@/components/reservas/reservation-reques
 import { requireRole } from "@/lib/auth/current-user";
 import { findRecentNotifications } from "@/lib/db-compat";
 import { db } from "@/lib/db";
-import { formatDateBR, formatTimeBR, getTodayDateInputValue } from "@/lib/reservas";
+import {
+  formatDateBR,
+  formatTimeBR,
+  getTodayDateInputValue,
+  NON_RESERVABLE_AREA_NAMES,
+} from "@/lib/reservas";
 
 type MoradorReservasPageProps = {
   searchParams?: Promise<{
@@ -36,7 +41,12 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
 
   const [areas, minhasReservas, disponibilidade, notifications] = await Promise.all([
     db.areaComum.findMany({
-      where: { status: "DISPONIVEL" },
+      where: {
+        status: "DISPONIVEL",
+        nomeArea: {
+          notIn: [...NON_RESERVABLE_AREA_NAMES],
+        },
+      },
       orderBy: { nomeArea: "asc" },
       select: {
         id: true,

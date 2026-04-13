@@ -18,6 +18,16 @@ const SESSION_COOKIE = "condoreserva.session";
 const GENERIC_DB_MESSAGE =
   "A aplicação não conseguiu acessar o banco de dados corretamente. Revise o bootstrap local antes de continuar.";
 
+function isRedirectError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "digest" in error &&
+    typeof error.digest === "string" &&
+    error.digest.startsWith("NEXT_REDIRECT")
+  );
+}
+
 function getClientIp(ip: string | null) {
   if (!ip) {
     return null;
@@ -40,48 +50,42 @@ export async function loginAction(_: unknown, formData: FormData) {
   const email = parsed.data.email.toLowerCase().trim();
   const password = parsed.data.password;
   const portal = parsed.data.portal;
-
-  let user;
   try {
-    user = await db.usuario.findUnique({ where: { email } });
-  } catch {
-    return { success: false, message: GENERIC_DB_MESSAGE };
-  }
+    const user = await db.usuario.findUnique({ where: { email } });
 
-  if (!user) {
-    return { success: false, message: "E-mail ou senha incorretos." };
-  }
+    if (!user) {
+      return { success: false, message: "E-mail ou senha incorretos." };
+    }
 
-  const now = new Date();
-  if (user.bloqueadoAte && user.bloqueadoAte > now) {
-    return {
-      success: false,
-      message: `Conta bloqueada até ${user.bloqueadoAte.toLocaleString("pt-BR")}.`,
-    };
-  }
+    const now = new Date();
+    if (user.bloqueadoAte && user.bloqueadoAte > now) {
+      return {
+        success: false,
+        message: `Conta bloqueada até ${user.bloqueadoAte.toLocaleString("pt-BR")}.`,
+      };
+    }
 
-  if (user.status !== "ATIVO") {
-    return {
-      success: false,
-      message: "Usuário inativo. Entre em contato com a administração do condomínio.",
-    };
-  }
+    if (user.status !== "ATIVO") {
+      return {
+        success: false,
+        message: "Usuário inativo. Entre em contato com a administração do condomínio.",
+      };
+    }
 
-  if (user.tipoUsuario !== portal) {
-    return {
-      success: false,
-      message:
-        "Este usuario nao pode autenticar neste portal. Use a rota de login correspondente ao seu perfil.",
-    };
-  }
+    if (user.tipoUsuario !== portal) {
+      return {
+        success: false,
+        message:
+          "Este usuario nao pode autenticar neste portal. Use a rota de login correspondente ao seu perfil.",
+      };
+    }
 
-  const passwordMatches = await compare(password, user.senha);
+    const passwordMatches = await compare(password, user.senha);
 
-  if (!passwordMatches) {
-    const nextAttempts = Math.min(user.tentativasLogin + 1, 3);
-    const shouldBlock = nextAttempts >= 3;
+    if (!passwordMatches) {
+      const nextAttempts = Math.min(user.tentativasLogin + 1, 3);
+      const shouldBlock = nextAttempts >= 3;
 
-    try {
       await db.usuario.update({
         where: { id: user.id },
         data: {
@@ -102,19 +106,15 @@ export async function loginAction(_: unknown, formData: FormData) {
           ipAddress: getClientIp((await headers()).get("x-forwarded-for")),
         },
       });
-    } catch {
-      return { success: false, message: GENERIC_DB_MESSAGE };
+
+      return {
+        success: false,
+        message: shouldBlock
+          ? "Conta bloqueada por 15 minutos após 3 tentativas inválidas."
+          : "E-mail ou senha incorretos.",
+      };
     }
 
-    return {
-      success: false,
-      message: shouldBlock
-        ? "Conta bloqueada por 15 minutos após 3 tentativas inválidas."
-        : "E-mail ou senha incorretos.",
-    };
-  }
-
-  try {
     await db.usuario.update({
       where: { id: user.id },
       data: {
@@ -133,26 +133,30 @@ export async function loginAction(_: unknown, formData: FormData) {
         ipAddress: getClientIp((await headers()).get("x-forwarded-for")),
       },
     });
-  } catch {
+
+    const token = await signSession({
+      sub: String(user.id),
+      role: user.tipoUsuario,
+      name: user.nomeCompleto,
+      email: user.email,
+    });
+
+    (await cookies()).set(SESSION_COOKIE, token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 12,
+    });
+
+    redirect(dashboardRoutes[user.tipoUsuario]);
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
     return { success: false, message: GENERIC_DB_MESSAGE };
   }
-
-  const token = await signSession({
-    sub: String(user.id),
-    role: user.tipoUsuario,
-    name: user.nomeCompleto,
-    email: user.email,
-  });
-
-  (await cookies()).set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 12,
-  });
-
-  redirect(dashboardRoutes[user.tipoUsuario]);
 }
 
 export async function logoutAction() {

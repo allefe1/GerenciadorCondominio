@@ -154,6 +154,11 @@ CREATE INDEX IF NOT EXISTS idx_notificacao_lida
 
 COMMENT ON TABLE notificacao IS 'Notificações do sistema para solicitações, decisões de reserva e eventos relevantes.';
 
+DROP VIEW IF EXISTS vw_solicitacoes_reserva;
+DROP VIEW IF EXISTS vw_metricas_dashboard;
+DROP VIEW IF EXISTS vw_disponibilidade_areas;
+DROP VIEW IF EXISTS vw_reservas_ativas;
+
 CREATE OR REPLACE VIEW vw_reservas_ativas AS
 SELECT
     r.id                AS reserva_id,

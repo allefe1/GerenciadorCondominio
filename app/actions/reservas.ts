@@ -3,12 +3,13 @@
 import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { requireRole } from "@/lib/auth/current-user";
 import { isInvalidReservaStatusValue, isMissingTableError } from "@/lib/db-compat";
 import { db } from "@/lib/db";
-import { combineDateAndTime, startOfDay } from "@/lib/reservas";
+import { combineDateAndTime, isReservableAreaName, startOfDay } from "@/lib/reservas";
 
 const GENERIC_RESERVA_MESSAGE =
   "Não foi possível concluir a operação de reserva com o estado atual do banco local.";
@@ -122,6 +123,10 @@ export async function requestReservationAction(_: unknown, formData: FormData) {
 
     if (!area || area.status !== "DISPONIVEL") {
       return { success: false, message: "A área selecionada não está disponível para reserva." };
+    }
+
+    if (!isReservableAreaName(area.nomeArea)) {
+      return { success: false, message: "Esta área é de uso livre e não precisa de reserva." };
     }
 
     const destinatarios = await db.usuario.findMany({
@@ -282,6 +287,8 @@ export async function cancelOwnReservationAction(formData: FormData) {
   revalidatePath("/morador/reservas");
   revalidatePath("/admin/reservas");
   revalidatePath("/sindico/reservas");
+
+  redirect("/morador/reservas");
 }
 
 export async function decideReservationAction(_: unknown, formData: FormData) {
@@ -387,8 +394,5 @@ export async function decideReservationAction(_: unknown, formData: FormData) {
   revalidatePath("/sindico");
   revalidatePath("/sindico/reservas");
 
-  return {
-    success: true,
-    message: parsed.data.decision === "APROVAR" ? "Reserva aprovada com sucesso." : "Reserva reprovada com sucesso.",
-  };
+  redirect(currentUser.tipoUsuario === "ADMINISTRADOR" ? "/admin/reservas" : "/sindico/reservas");
 }

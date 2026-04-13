@@ -73,6 +73,8 @@ function parseDatabaseUrl(databaseUrl) {
   const url = new URL(databaseUrl);
 
   return {
+    host: url.hostname,
+    port: url.port || "5432",
     user: decodeURIComponent(url.username),
     password: decodeURIComponent(url.password),
     database: url.pathname.replace(/^\//, ""),
@@ -80,13 +82,28 @@ function parseDatabaseUrl(databaseUrl) {
 }
 
 function runSqlFileWithLocalPsql(psqlCommand, databaseUrl, filePath) {
+  const { host, port, user, password, database } = parseDatabaseUrl(databaseUrl);
   const result = spawnSync(
     psqlCommand,
-    ["-v", "ON_ERROR_STOP=1", databaseUrl, "-f", filePath],
+    [
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-h",
+      host,
+      "-p",
+      port,
+      "-U",
+      user,
+      "-d",
+      database,
+      "-f",
+      filePath,
+    ],
     {
       stdio: "inherit",
       env: {
         ...process.env,
+        PGPASSWORD: password,
         PGCLIENTENCODING: process.env.PGCLIENTENCODING || "UTF8",
       },
     },
