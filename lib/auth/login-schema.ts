@@ -1,0 +1,9 @@
+import { z } from "zod";
+
+export const loginSchema = z.object({
+  email: z.string().email("Informe um e-mail válido."),
+  password: z.string().min(1, "Informe a senha."),
+  portal: z.enum(["MORADOR", "ADMINISTRADOR", "SINDICO"]),
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;

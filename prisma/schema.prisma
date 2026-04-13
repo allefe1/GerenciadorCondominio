@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoUsuario {
+  MORADOR
+  ADMINISTRADOR
+  SINDICO
+
+  @@map("tipo_usuario_enum")
+}
+
+enum StatusGeral {
+  ATIVO
+  INATIVO
+
+  @@map("status_geral_enum")
+}
+
+enum StatusReserva {
+  PENDENTE
+  CONFIRMADA
+  REPROVADA
+  CANCELADA
+
+  @@map("status_reserva_enum")
+}
+
+enum StatusArea {
+  DISPONIVEL
+  INDISPONIVEL
+
+  @@map("status_area_enum")
+}
+
+model Usuario {
+  id                Int           @id @default(autoincrement())
+  tipoUsuario       TipoUsuario   @map("tipo_usuario")
+  nomeCompleto      String        @map("nome_completo") @db.VarChar(200)
+  email             String        @unique(map: "uk_usuario_email") @db.VarChar(254)
+  senha             String        @db.VarChar(255)
+  telefone          String?       @db.VarChar(20)
+  status            StatusGeral   @default(ATIVO)
+  apartamento       String?       @db.VarChar(20)
+  bloco             String?       @db.VarChar(20)
+  permissoesAcesso  String[]      @default([]) @map("permissoes_acesso")
+  tentativasLogin   Int           @default(0) @map("tentativas_login") @db.SmallInt
+  bloqueadoAte      DateTime?     @map("bloqueado_ate") @db.Timestamp(6)
+  criadoEm          DateTime      @default(now()) @map("criado_em") @db.Timestamp(6)
+  atualizadoEm      DateTime      @default(now()) @map("atualizado_em") @db.Timestamp(6)
+  reservasMorador   Reserva[]     @relation("ReservaMorador")
+  reservasCancelada Reserva[]     @relation("ReservaCancelador")
+  reservasDecididas Reserva[]     @relation("ReservaDecisor")
+  logs              LogAtividade[]
+  recuperacoesSenha RecuperacaoSenha[]
+  notificacoes      Notificacao[]
+
+  @@index([tipoUsuario], map: "idx_usuario_tipo")
+  @@index([status], map: "idx_usuario_status")
+  @@index([email, status], map: "idx_usuario_email_status")
+  @@map("usuario")
+}
+
+model AreaComum {
+  id               Int        @id @default(autoincrement())
+  nomeArea         String     @unique(map: "uk_area_comum_nome") @map("nome_area") @db.VarChar(150)
+  descricao        String?
+  capacidadeMaxima Int        @map("capacidade_maxima")
+  regrasUso        String?    @map("regras_uso")
+  valorReserva     Decimal    @default(0) @map("valor_reserva") @db.Decimal(10, 2)
+  status           StatusArea @default(DISPONIVEL)
+  criadoEm         DateTime   @default(now()) @map("criado_em") @db.Timestamp(6)
+  atualizadoEm     DateTime   @default(now()) @map("atualizado_em") @db.Timestamp(6)
+  reservas         Reserva[]
+
+  @@index([status], map: "idx_area_comum_status")
+  @@map("area_comum")
+}
+
+model Reserva {
+  id               Int           @id @default(autoincrement())
+  idMorador        Int           @map("id_morador")
+  idAreaComum      Int           @map("id_area_comum")
+  dataReserva      DateTime      @map("data_reserva") @db.Date
+  horaInicio       DateTime      @map("hora_inicio") @db.Time(6)
+  horaFim          DateTime      @map("hora_fim") @db.Time(6)
+  statusReserva    StatusReserva @default(PENDENTE) @map("status_reserva")
+  dataSolicitacao  DateTime      @default(now()) @map("data_solicitacao") @db.Timestamp(6)
+  dataCancelamento DateTime?     @map("data_cancelamento") @db.Timestamp(6)
+  idCanceladoPor   Int?          @map("id_cancelado_por")
+  observacaoSolicitacao String?  @map("observacao_solicitacao")
+  dataDecisao      DateTime?     @map("data_decisao") @db.Timestamp(6)
+  motivoDecisao    String?       @map("motivo_decisao")
+  idDecididoPor    Int?          @map("id_decidido_por")
+  criadoEm         DateTime      @default(now()) @map("criado_em") @db.Timestamp(6)
+  atualizadoEm     DateTime      @default(now()) @map("atualizado_em") @db.Timestamp(6)
+  morador          Usuario       @relation("ReservaMorador", fields: [idMorador], references: [id], onDelete: Restrict)
+  areaComum        AreaComum     @relation(fields: [idAreaComum], references: [id], onDelete: Restrict)
+  canceladoPor     Usuario?      @relation("ReservaCancelador", fields: [idCanceladoPor], references: [id], onDelete: SetNull)
+  decididoPor      Usuario?      @relation("ReservaDecisor", fields: [idDecididoPor], references: [id], onDelete: SetNull)
+  notificacoes     Notificacao[]
+
+  @@index([idMorador], map: "idx_reserva_morador")
+  @@index([idAreaComum], map: "idx_reserva_area")
+  @@index([dataReserva], map: "idx_reserva_data")
+  @@index([statusReserva], map: "idx_reserva_status")
+  @@index([idMorador, statusReserva], map: "idx_reserva_morador_status")
+  @@index([idAreaComum, dataReserva, statusReserva], map: "idx_reserva_area_data_status")
+  @@index([idDecididoPor], map: "idx_reserva_decidido_por")
+  @@map("reserva")
+}
+
+model LogAtividade {
+  id         Int       @id @default(autoincrement())
+  idUsuario  Int?      @map("id_usuario")
+  acao       String    @db.VarChar(100)
+  entidade   String    @db.VarChar(50)
+  idEntidade Int?      @map("id_entidade")
+  detalhes   Json?
+  ipAddress  String?   @map("ip_address") @db.Inet
+  criadoEm   DateTime  @default(now()) @map("criado_em") @db.Timestamp(6)
+  usuario    Usuario?  @relation(fields: [idUsuario], references: [id], onDelete: SetNull)
+
+  @@index([idUsuario], map: "idx_log_usuario")
+  @@index([acao], map: "idx_log_acao")
+  @@index([criadoEm(sort: Desc)], map: "idx_log_criado_em")
+  @@index([entidade, idEntidade], map: "idx_log_entidade")
+  @@map("log_atividade")
+}
+
+model Configuracao {
+  chave        String   @id @db.VarChar(100)
+  valor        String   @db.VarChar(255)
+  descricao    String?
+  atualizadoEm DateTime @default(now()) @map("atualizado_em") @db.Timestamp(6)
+
+  @@map("configuracao")
+}
+
+model RecuperacaoSenha {
+  id        Int       @id @default(autoincrement())
+  idUsuario Int       @map("id_usuario")
+  token     String    @unique(map: "uk_recuperacao_senha_token") @db.VarChar(255)
+  expiraEm  DateTime  @map("expira_em") @db.Timestamp(6)
+  usadoEm   DateTime? @map("usado_em") @db.Timestamp(6)
+  criadoEm  DateTime  @default(now()) @map("criado_em") @db.Timestamp(6)
+  usuario   Usuario   @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+
+  @@index([idUsuario], map: "idx_recuperacao_senha_usuario")
+  @@index([token], map: "idx_recuperacao_senha_token")
+  @@map("recuperacao_senha")
+}
+
+model Notificacao {
+  id        Int       @id @default(autoincrement())
+  idUsuario Int       @map("id_usuario")
+  tipo      String    @db.VarChar(50)
+  titulo    String    @db.VarChar(150)
+  mensagem  String
+  idReserva Int?      @map("id_reserva")
+  lidaEm    DateTime? @map("lida_em") @db.Timestamp(6)
+  criadoEm  DateTime  @default(now()) @map("criado_em") @db.Timestamp(6)
+  usuario   Usuario   @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+  reserva   Reserva?  @relation(fields: [idReserva], references: [id], onDelete: SetNull)
+
+  @@index([idUsuario, criadoEm(sort: Desc)], map: "idx_notificacao_usuario")
+  @@index([idUsuario, lidaEm], map: "idx_notificacao_lida")
+  @@map("notificacao")
+}
