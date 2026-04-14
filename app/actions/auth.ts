@@ -16,7 +16,7 @@ import { sendResetPasswordMail } from "@/lib/mail";
 
 const SESSION_COOKIE = "condoreserva.session";
 const GENERIC_DB_MESSAGE =
-  "A aplicação não conseguiu acessar o banco de dados corretamente. Revise o bootstrap local antes de continuar.";
+  "A aplicação não conseguiu acessar o banco de dados corretamente. Verifique a DATABASE_URL e a configuração do Supabase.";
 
 function isRedirectError(error: unknown) {
   return (

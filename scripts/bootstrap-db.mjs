@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { spawnSync } from "node:child_process";
+import pg from "pg";
 
 const rootDir = process.cwd();
 const envFile = join(rootDir, ".env");
@@ -38,123 +38,50 @@ function loadEnvFile() {
   }
 }
 
-function resolvePsqlCommand() {
-  if (process.env.PSQL_PATH) {
-    return process.env.PSQL_PATH;
+function shouldUseSsl(databaseUrl) {
+  const url = new URL(databaseUrl);
+  const sslMode = url.searchParams.get("sslmode");
+
+  if (sslMode === "disable") {
+    return false;
   }
 
-  if (process.platform === "win32") {
-    const versions = [18, 17, 16, 15, 14, 13, 12];
-    for (const version of versions) {
-      const candidate = `C:\\Program Files\\PostgreSQL\\${version}\\bin\\psql.exe`;
-      if (existsSync(candidate)) {
-        return candidate;
-      }
-    }
+  if (sslMode === "require" || sslMode === "verify-full" || sslMode === "verify-ca") {
+    return true;
   }
 
-  return "psql";
+  return !["localhost", "127.0.0.1"].includes(url.hostname);
 }
 
-function canUseLocalPsql(psqlCommand) {
-  if (psqlCommand !== "psql") {
-    return existsSync(psqlCommand);
-  }
+function getConnectionStringWithoutSslMode(databaseUrl) {
+  const url = new URL(databaseUrl);
+  url.searchParams.delete("sslmode");
+  return url.toString();
+}
 
-  const result = spawnSync(psqlCommand, ["--version"], {
-    stdio: "ignore",
-    shell: process.platform === "win32",
+async function runSqlFilesWithDatabaseUrl(databaseUrl, sqlFiles) {
+  const client = new pg.Client({
+    connectionString: getConnectionStringWithoutSslMode(databaseUrl),
+    ssl: shouldUseSsl(databaseUrl) ? { rejectUnauthorized: false } : false,
   });
 
-  return result.status === 0;
-}
+  await client.connect();
 
-function parseDatabaseUrl(databaseUrl) {
-  const url = new URL(databaseUrl);
+  try {
+    for (const file of sqlFiles) {
+      const absolutePath = join(rootDir, file);
 
-  return {
-    host: url.hostname,
-    port: url.port || "5432",
-    user: decodeURIComponent(url.username),
-    password: decodeURIComponent(url.password),
-    database: url.pathname.replace(/^\//, ""),
-  };
-}
+      if (!existsSync(absolutePath)) {
+        console.error(`Arquivo SQL não encontrado: ${file}`);
+        process.exit(1);
+      }
 
-function runSqlFileWithLocalPsql(psqlCommand, databaseUrl, filePath) {
-  const { host, port, user, password, database } = parseDatabaseUrl(databaseUrl);
-  const result = spawnSync(
-    psqlCommand,
-    [
-      "-v",
-      "ON_ERROR_STOP=1",
-      "-h",
-      host,
-      "-p",
-      port,
-      "-U",
-      user,
-      "-d",
-      database,
-      "-f",
-      filePath,
-    ],
-    {
-      stdio: "inherit",
-      env: {
-        ...process.env,
-        PGPASSWORD: password,
-        PGCLIENTENCODING: process.env.PGCLIENTENCODING || "UTF8",
-      },
-    },
-  );
-
-  if (result.error) {
-    throw result.error;
-  }
-
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
-  }
-}
-
-function runSqlFileWithDocker(databaseUrl, filePath) {
-  const { user, password, database } = parseDatabaseUrl(databaseUrl);
-  const serviceName = process.env.DOCKER_DB_SERVICE || "postgres";
-  const sqlContent = readFileSync(filePath, "utf8");
-
-  const result = spawnSync(
-    "docker",
-    [
-      "compose",
-      "exec",
-      "-T",
-      serviceName,
-      "psql",
-      "-v",
-      "ON_ERROR_STOP=1",
-      "-U",
-      user,
-      "-d",
-      database,
-    ],
-    {
-      input: sqlContent,
-      stdio: ["pipe", "inherit", "inherit"],
-      env: {
-        ...process.env,
-        PGPASSWORD: password,
-        PGCLIENTENCODING: process.env.PGCLIENTENCODING || "UTF8",
-      },
-    },
-  );
-
-  if (result.error) {
-    throw result.error;
-  }
-
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
+      console.log(`\n>> Aplicando ${file}`);
+      const sqlContent = readFileSync(absolutePath, "utf8");
+      await client.query(sqlContent);
+    }
+  } finally {
+    await client.end();
   }
 }
 
@@ -166,7 +93,6 @@ if (!databaseUrl) {
   process.exit(1);
 }
 
-const psqlCommand = resolvePsqlCommand();
 const defaultSqlFiles = [
   "ModelagemBanco/condoreserva_database.sql",
   "db/migrations/001_seed_usuarios_iniciais.sql",
@@ -175,25 +101,12 @@ const defaultSqlFiles = [
 ];
 const cliFiles = process.argv.slice(2);
 const sqlFiles = cliFiles.length > 0 ? cliFiles : defaultSqlFiles;
-const bootstrapMode = process.env.DB_BOOTSTRAP_MODE || "auto";
-const useLocalPsql =
-  bootstrapMode === "local" ||
-  (bootstrapMode === "auto" && canUseLocalPsql(psqlCommand));
 
-for (const file of sqlFiles) {
-  const absolutePath = join(rootDir, file);
-
-  if (!existsSync(absolutePath)) {
-    console.error(`Arquivo SQL não encontrado: ${file}`);
+runSqlFilesWithDatabaseUrl(databaseUrl, sqlFiles)
+  .then(() => {
+    console.log("\nBootstrap concluído com sucesso.");
+  })
+  .catch((error) => {
+    console.error("\nErro ao aplicar SQL:", error.message);
     process.exit(1);
-  }
-
-  console.log(`\n>> Aplicando ${file}`);
-  if (useLocalPsql) {
-    runSqlFileWithLocalPsql(psqlCommand, databaseUrl, absolutePath);
-  } else {
-    runSqlFileWithDocker(databaseUrl, absolutePath);
-  }
-}
-
-console.log("\nBootstrap concluído com sucesso.");
+  });

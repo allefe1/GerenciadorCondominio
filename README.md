@@ -8,8 +8,7 @@ Aplicação web para autenticação, gestão de usuários e reservas de áreas c
 - TypeScript
 - Tailwind CSS
 - Prisma
-- PostgreSQL
-- Docker Compose para banco local recomendado
+- Supabase (PostgreSQL gerenciado)
 
 ## Status funcional
 
@@ -33,19 +32,14 @@ O projeto já entrega:
 Para rodar no Windows com PowerShell:
 
 - Node.js 20+ com `npm`
-- Docker Desktop com Docker Compose habilitado
+- Projeto Supabase com banco ativo
 
-Opcional para modo manual sem Docker:
-
-- PostgreSQL 16+ instalado localmente
-- `psql` disponível no PATH ou em `C:\Program Files\PostgreSQL\<versao>\bin\psql.exe`
-
-## Modo recomendado: Docker + PowerShell
+## Setup recomendado (Supabase + PowerShell)
 
 ### 1. Entrar no projeto
 
 ```powershell
-cd "C:\Users\Matheus\Documents\GitHub\GerenciadorCondominio"
+cd "C:\Users\filipez\Documents\GerenciadorCondominio"
 ```
 
 ### 2. Criar `.env`
@@ -58,11 +52,7 @@ notepad .env
 Use pelo menos estes valores:
 
 ```env
-POSTGRES_DB="condoreserva"
-POSTGRES_USER="postgres"
-POSTGRES_PASSWORD="postgres"
-POSTGRES_PORT="5432"
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/condoreserva?schema=public"
+DATABASE_URL="postgresql://postgres.<PROJECT_REF>:<DB_PASSWORD>@aws-1-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require"
 AUTH_SECRET="123456"
 APP_URL="http://localhost:3000"
 SMTP_HOST=""
@@ -70,7 +60,6 @@ SMTP_PORT=""
 SMTP_USER=""
 SMTP_PASS=""
 SMTP_FROM="nao-responda@condoreserva.com"
-DOCKER_DB_SERVICE="postgres"
 ```
 
 ### 3. Instalar dependências
@@ -81,33 +70,13 @@ Se o PowerShell bloquear `npm`, use `npm.cmd`:
 npm.cmd install
 ```
 
-### 4. Subir o PostgreSQL em Docker
+### 4. Regenerar Prisma Client
 
 ```powershell
-npm.cmd run db:docker:up
-```
-
-Se quiser acompanhar o banco:
-
-```powershell
-npm.cmd run db:docker:logs
-```
-
-### 5. Aplicar schema e migrations
-
-```powershell
-npm.cmd run db:bootstrap
 npm.cmd run db:generate
 ```
 
-O bootstrap aplica, nesta ordem:
-
-- `ModelagemBanco/condoreserva_database.sql`
-- `db/migrations/001_seed_usuarios_iniciais.sql`
-- `db/migrations/002_auth_recuperacao_senha.sql`
-- `db/migrations/003_reservas_aprovacao_notificacoes.sql`
-
-### 6. Rodar a aplicação
+### 5. Rodar a aplicação
 
 ```powershell
 npm.cmd run dev
@@ -196,39 +165,7 @@ Abra:
 npm.cmd run dev
 npm.cmd run build
 npm.cmd run db:generate
-npm.cmd run db:bootstrap
 npm.cmd run db:migrate:003
-npm.cmd run db:docker:up
-npm.cmd run db:docker:down
-npm.cmd run db:docker:logs
-```
-
-## Modo alternativo: PostgreSQL local sem Docker
-
-Se preferir usar PostgreSQL já instalado no Windows:
-
-1. Garanta que o serviço esteja rodando.
-2. Crie o banco `condoreserva`.
-3. Ajuste o `.env` com a `DATABASE_URL` correta.
-4. Rode:
-
-```powershell
-npm.cmd run db:bootstrap
-npm.cmd run db:generate
-npm.cmd run dev
-```
-
-Se o `psql` não estiver no PATH, o bootstrap tenta localizar automaticamente em:
-
-- `C:\Program Files\PostgreSQL\18\bin\psql.exe`
-- `C:\Program Files\PostgreSQL\17\bin\psql.exe`
-- versões anteriores até 12
-
-Se necessário, force manualmente:
-
-```powershell
-$env:PSQL_PATH="C:\Program Files\PostgreSQL\18\bin\psql.exe"
-npm.cmd run db:bootstrap
 ```
 
 ## Troubleshooting
@@ -251,17 +188,13 @@ Copy-Item .env.example .env -Force
 notepad .env
 ```
 
-### 3. Erro de encoding ao importar SQL no Windows
+### 3. Erro de conexão SSL/host no Supabase
 
-O bootstrap já força:
+Confira se sua `DATABASE_URL`:
 
-- `PGCLIENTENCODING=UTF8`
-
-Se for importar manualmente, rode antes:
-
-```powershell
-$env:PGCLIENTENCODING="UTF8"
-```
+- usa host do projeto Supabase
+- inclui `?sslmode=require`
+- usa senha correta do banco
 
 ### 4. `The table public.notificacao does not exist`
 
@@ -274,15 +207,7 @@ npm.cmd run db:generate
 
 ### 5. `The table public.usuario does not exist`
 
-O banco ainda não recebeu o bootstrap inicial. Rode:
-
-```powershell
-npm.cmd run db:docker:up
-npm.cmd run db:bootstrap
-npm.cmd run db:generate
-```
-
-Se estiver usando PostgreSQL local, confirme também que a `DATABASE_URL` do `.env` aponta para o banco `condoreserva` correto.
+Seu banco Supabase não está com o schema esperado deste projeto. Reaplique o setup de banco (schema + seeds) antes de subir a aplicação.
 
 ### 6. Erro com enum `PENDENTE` ou `REPROVADA`
 
@@ -292,32 +217,8 @@ Também indica banco parcialmente migrado. Rode:
 npm.cmd run db:migrate:003
 ```
 
-### 7. `docker compose` não encontrado
-
-Instale ou abra o Docker Desktop e confirme:
-
-```powershell
-docker compose version
-```
-
-### 8. Porta 5432 ocupada
-
-Altere no `.env`:
-
-```env
-POSTGRES_PORT="5433"
-DATABASE_URL="postgresql://postgres:postgres@localhost:5433/condoreserva?schema=public"
-```
-
-Depois rode:
-
-```powershell
-npm.cmd run db:docker:down
-npm.cmd run db:docker:up
-```
-
 ## Observações
 
 - O SQL original continua sendo a fonte principal de verdade do projeto.
 - As migrations incrementais preservam o arquivo base e registram as evoluções necessárias para autenticação, notificações e fluxo de reservas.
-- O ambiente via Docker é o caminho mais estável para evitar diferenças de configuração entre máquinas.
+- O ambiente padrão agora é Supabase para facilitar colaboração entre múltiplos devs.
