@@ -15,7 +15,6 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
   return (
     <UserManagementPage
       currentUser={currentUser}
-      currentPath="/admin/usuarios"
       basePath="/admin/usuarios"
       pageTitle="Gerenciamento de usuários"
       pageSubtitle="Cadastre, atualize e controle perfis administrativos e moradores"

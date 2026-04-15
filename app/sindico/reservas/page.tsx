@@ -7,7 +7,6 @@ export default async function SindicoReservasPage() {
   return (
     <ReservationManagementPage
       currentUser={currentUser}
-      currentPath="/sindico/reservas"
       pageTitle="Aprovação de reservas"
       pageSubtitle="Supervisione solicitações e o calendário de áreas comuns"
     />

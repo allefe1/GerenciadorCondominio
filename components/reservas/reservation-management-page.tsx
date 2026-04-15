@@ -1,5 +1,4 @@
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { getNavItems } from "@/components/dashboard/user-nav";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { ReservationDecisionForm } from "@/components/reservas/reservation-decision-form";
 import type { CurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/db";
@@ -7,14 +6,12 @@ import { formatDateBR, formatTimeBR } from "@/lib/reservas";
 
 type ReservationManagementPageProps = {
   currentUser: CurrentUser;
-  currentPath: string;
   pageTitle: string;
   pageSubtitle: string;
 };
 
 export async function ReservationManagementPage({
   currentUser,
-  currentPath,
   pageTitle,
   pageSubtitle,
 }: ReservationManagementPageProps) {
@@ -42,15 +39,12 @@ export async function ReservationManagementPage({
   ]);
 
   return (
-    <DashboardShell
-      roleLabel={currentUser.tipoUsuario === "ADMINISTRADOR" ? "Administrador" : "Síndico"}
-      title={pageTitle}
-      subtitle={pageSubtitle}
-      currentPath={currentPath}
-      userName={currentUser.nomeCompleto}
-      userEmail={currentUser.email}
-      navItems={getNavItems(currentUser.tipoUsuario)}
-    >
+    <>
+      <PageHeader
+        roleLabel={currentUser.tipoUsuario === "ADMINISTRADOR" ? "Administrador" : "Síndico"}
+        title={pageTitle}
+        subtitle={pageSubtitle}
+      />
       <section className="grid gap-5 md:grid-cols-3">
         <article className="rounded-[24px] bg-primary-container p-6 text-white">
           <p className="text-sm text-white/80">Solicitações pendentes</p>
@@ -129,6 +123,6 @@ export async function ReservationManagementPage({
           </div>
         </article>
       </section>
-    </DashboardShell>
+    </>
   );
 }

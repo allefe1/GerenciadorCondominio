@@ -2,8 +2,7 @@ import Link from "next/link";
 import type { TipoUsuario } from "@prisma/client";
 
 import { deleteMoradorAction, toggleUserStatusAction } from "@/app/actions/users";
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { getNavItems } from "@/components/dashboard/user-nav";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { UserForm } from "@/components/users/user-form";
 import type { CurrentUser } from "@/lib/auth/current-user";
 import { isInvalidReservaStatusValue } from "@/lib/db-compat";
@@ -11,7 +10,6 @@ import { db } from "@/lib/db";
 
 type UserManagementPageProps = {
   currentUser: CurrentUser;
-  currentPath: string;
   basePath: string;
   pageTitle: string;
   pageSubtitle: string;
@@ -20,7 +18,6 @@ type UserManagementPageProps = {
 
 export async function UserManagementPage({
   currentUser,
-  currentPath,
   basePath,
   pageTitle,
   pageSubtitle,
@@ -35,15 +32,12 @@ export async function UserManagementPage({
   };
 
   return (
-    <DashboardShell
-      roleLabel={currentUser.tipoUsuario === "ADMINISTRADOR" ? "Administrador" : "Síndico"}
-      title={pageTitle}
-      subtitle={pageSubtitle}
-      currentPath={currentPath}
-      userName={currentUser.nomeCompleto}
-      userEmail={currentUser.email}
-      navItems={getNavItems(currentUser.tipoUsuario)}
-    >
+    <>
+      <PageHeader
+        roleLabel={currentUser.tipoUsuario === "ADMINISTRADOR" ? "Administrador" : "Síndico"}
+        title={pageTitle}
+        subtitle={pageSubtitle}
+      />
       <section className="grid gap-5 md:grid-cols-3">
         <article className="rounded-[24px] bg-primary-container p-6 text-white">
           <p className="text-sm text-white/80">Moradores ativos</p>
@@ -161,7 +155,7 @@ export async function UserManagementPage({
           </table>
         </div>
       </section>
-    </DashboardShell>
+    </>
   );
 }
 

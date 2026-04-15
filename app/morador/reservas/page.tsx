@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { cancelOwnReservationAction } from "@/app/actions/reservas";
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { getNavItems } from "@/components/dashboard/user-nav";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { NotificationList } from "@/components/reservas/notification-list";
 import { ReservationRequestForm } from "@/components/reservas/reservation-request-form";
 import { requireRole } from "@/lib/auth/current-user";
@@ -85,15 +84,12 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
   ]);
 
   return (
-    <DashboardShell
-      roleLabel="Morador"
-      title="Reservas e disponibilidade"
-      subtitle="Solicite áreas comuns e acompanhe suas reservas"
-      currentPath="/morador/reservas"
-      userName={currentUser.nomeCompleto}
-      userEmail={currentUser.email}
-      navItems={getNavItems(currentUser.tipoUsuario)}
-    >
+    <>
+      <PageHeader
+        roleLabel="Morador"
+        title="Reservas e disponibilidade"
+        subtitle="Solicite áreas comuns e acompanhe suas reservas"
+      />
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <ReservationRequestForm
           areas={areas.map((area) => ({
@@ -233,6 +229,6 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
       </section>
 
       <NotificationList notifications={notifications} />
-    </DashboardShell>
+    </>
   );
 }

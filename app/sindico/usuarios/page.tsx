@@ -15,7 +15,6 @@ export default async function SindicoUsersPage({ searchParams }: SindicoUsersPag
   return (
     <UserManagementPage
       currentUser={currentUser}
-      currentPath="/sindico/usuarios"
       basePath="/sindico/usuarios"
       pageTitle="Gestão de usuários"
       pageSubtitle="Acompanhe cadastros, permissões e status operacionais"

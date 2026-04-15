@@ -1,5 +1,4 @@
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { getNavItems } from "@/components/dashboard/user-nav";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { requireRole } from "@/lib/auth/current-user";
 import { countReservasAbertas } from "@/lib/db-compat";
 import { db } from "@/lib/db";
@@ -14,15 +13,12 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <DashboardShell
-      roleLabel="Administrador"
-      title="Painel administrativo"
-      subtitle="Visão operacional do condomínio"
-      currentPath="/admin"
-      userName={currentUser.nomeCompleto}
-      userEmail={currentUser.email}
-      navItems={getNavItems(currentUser.tipoUsuario)}
-    >
+    <>
+      <PageHeader
+        roleLabel="Administrador"
+        title="Painel administrativo"
+        subtitle="Visão operacional do condomínio"
+      />
       <section className="grid gap-6 md:grid-cols-3">
         <article className="rounded-[24px] bg-primary-container p-6 text-white">
           <p className="text-sm text-white/80">Total de moradores</p>
@@ -69,6 +65,6 @@ export default async function AdminPage() {
           </Link>
         </article>
       </section>
-    </DashboardShell>
+    </>
   );
 }

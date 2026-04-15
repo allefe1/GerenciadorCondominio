@@ -7,7 +7,6 @@ export default async function AdminReservasPage() {
   return (
     <ReservationManagementPage
       currentUser={currentUser}
-      currentPath="/admin/reservas"
       pageTitle="Gestão de reservas"
       pageSubtitle="Aprove, reprove e acompanhe o calendário operacional"
     />

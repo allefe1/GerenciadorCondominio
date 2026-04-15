@@ -1,5 +1,4 @@
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { getNavItems } from "@/components/dashboard/user-nav";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { PasswordForm } from "@/components/users/password-form";
 import { ProfileForm } from "@/components/users/profile-form";
 import { requireAuthenticatedUser } from "@/lib/auth/current-user";
@@ -8,15 +7,12 @@ export default async function PerfilPage() {
   const currentUser = await requireAuthenticatedUser();
 
   return (
-    <DashboardShell
-      roleLabel="Meu perfil"
-      title="Dados da conta"
-      subtitle="Atualize informações pessoais e credenciais"
-      currentPath="/perfil"
-      userName={currentUser.nomeCompleto}
-      userEmail={currentUser.email}
-      navItems={getNavItems(currentUser.tipoUsuario)}
-    >
+    <>
+      <PageHeader
+        roleLabel="Meu perfil"
+        title="Dados da conta"
+        subtitle="Atualize informações pessoais e credenciais"
+      />
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-[28px] bg-surface-container-lowest p-6 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">Cadastro</p>
@@ -68,6 +64,6 @@ export default async function PerfilPage() {
           </article>
         </div>
       </section>
-    </DashboardShell>
+    </>
   );
 }

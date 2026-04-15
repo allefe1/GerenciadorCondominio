@@ -1,5 +1,4 @@
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { getNavItems } from "@/components/dashboard/user-nav";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { requireRole } from "@/lib/auth/current-user";
 import { countNotificacoesNaoLidas, countReservasAbertas } from "@/lib/db-compat";
 import Link from "next/link";
@@ -12,15 +11,12 @@ export default async function MoradorPage() {
   ]);
 
   return (
-    <DashboardShell
-      roleLabel="Morador"
-      title="Portal do morador"
-      subtitle="Acompanhe reservas, avisos e seu cadastro"
-      currentPath="/morador"
-      userName={currentUser.nomeCompleto}
-      userEmail={currentUser.email}
-      navItems={getNavItems(currentUser.tipoUsuario)}
-    >
+    <>
+      <PageHeader
+        roleLabel="Morador"
+        title="Portal do morador"
+        subtitle="Acompanhe reservas, avisos e seu cadastro"
+      />
       <section className="grid gap-6 md:grid-cols-2">
         <article className="rounded-[24px] bg-surface-container-lowest p-8 shadow-sm">
           <h2 className="text-xl font-bold">Minhas reservas</h2>
@@ -49,6 +45,6 @@ export default async function MoradorPage() {
           </Link>
         </article>
       </section>
-    </DashboardShell>
+    </>
   );
 }

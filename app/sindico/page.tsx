@@ -1,5 +1,4 @@
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { getNavItems } from "@/components/dashboard/user-nav";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { requireRole } from "@/lib/auth/current-user";
 import { countReservasPendentes } from "@/lib/db-compat";
 import { db } from "@/lib/db";
@@ -25,15 +24,12 @@ export default async function SindicoPage() {
   ]);
 
   return (
-    <DashboardShell
-      roleLabel="Síndico"
-      title="Console do síndico"
-      subtitle="Supervisão, pendências e auditoria"
-      currentPath="/sindico"
-      userName={currentUser.nomeCompleto}
-      userEmail={currentUser.email}
-      navItems={getNavItems(currentUser.tipoUsuario)}
-    >
+    <>
+      <PageHeader
+        roleLabel="Síndico"
+        title="Console do síndico"
+        subtitle="Supervisão, pendências e auditoria"
+      />
       <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
         <article className="rounded-[24px] bg-surface-container-lowest p-8 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-on-surface-variant">
@@ -62,6 +58,6 @@ export default async function SindicoPage() {
           </Link>
         </article>
       </section>
-    </DashboardShell>
+    </>
   );
 }
