@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cancelOwnReservationAction } from "@/app/actions/reservas";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { getNavItems } from "@/components/dashboard/user-nav";
@@ -115,7 +116,7 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
               const active = date.value === selectedDate;
 
               return (
-                <a
+                <Link
                   key={date.value}
                   href={`/morador/reservas?data=${date.value}${selectedAreaId ? `&area=${selectedAreaId}` : ""}`}
                   className={`rounded-[14px] border px-3 py-3 text-center text-sm font-semibold transition ${
@@ -125,7 +126,7 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
                   }`}
                 >
                   {date.label}
-                </a>
+                </Link>
               );
             })}
           </div>
