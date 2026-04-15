@@ -9,9 +9,12 @@ type LoginPortalPageProps = {
   portal: TipoUsuario;
 };
 
+export const dynamic = 'force-static';
 export function LoginPortalPage({ portal }: LoginPortalPageProps) {
+  console.time('LoginPortalRender');
   const content = loginPortalContent[portal];
 
+  console.timeEnd('LoginPortalRender');
   return (
     <main className="flex min-h-screen w-full bg-surface">
       <section className="flex w-full flex-col bg-surface-container-lowest p-8 md:p-12 lg:w-1/2 lg:p-20">
