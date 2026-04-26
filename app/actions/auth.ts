@@ -149,8 +149,11 @@ export async function loginAction(_: unknown, formData: FormData) {
       maxAge: 60 * 60 * 12,
     });
 
-    redirect(dashboardRoutes[user.tipoUsuario]);
-  } catch (error) {
+if (user.primeiroAcesso) {
+      redirect("/primeiro-acesso"); // Manda para a tela obrigatória
+    } else {
+      redirect(dashboardRoutes[user.tipoUsuario]); // Fluxo normal pro dashboard
+    }  } catch (error) {
     if (isRedirectError(error)) {
       throw error;
     }

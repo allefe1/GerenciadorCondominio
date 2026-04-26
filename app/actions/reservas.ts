@@ -86,6 +86,7 @@ export async function markAllNotificationsAsReadAction() {
 
 export async function requestReservationAction(_: unknown, formData: FormData) {
   const currentUser = await requireRole(["MORADOR"]);
+  
   const parsed = reservationRequestSchema.safeParse({
     idAreaComum: formData.get("idAreaComum"),
     dataReserva: formData.get("dataReserva"),
@@ -99,6 +100,8 @@ export async function requestReservationAction(_: unknown, formData: FormData) {
   }
 
   const { idAreaComum, dataReserva, horaInicio, horaFim, observacaoSolicitacao } = parsed.data;
+  
+  // Datas para as validações do Javascript continuam iguais
   const start = combineDateAndTime(dataReserva, horaInicio);
   const end = combineDateAndTime(dataReserva, horaFim);
   const dateValue = startOfDay(dataReserva);
@@ -129,11 +132,32 @@ export async function requestReservationAction(_: unknown, formData: FormData) {
       return { success: false, message: "Esta área é de uso livre e não precisa de reserva." };
     }
 
+    // --- A MÁGICA PARA DRIBLAR O FUSO HORÁRIO NO BANCO ---
+    // Forçamos o Prisma a ver o horário como se já estivesse em UTC.
+    // Assim, se o morador digitar 18:00, o Prisma salva 18:00:00 (e não 21:00:00).
+    const horaInicioPrisma = new Date(`1970-01-01T${horaInicio}:00.000Z`);
+    const horaFimPrisma = new Date(`1970-01-01T${horaFim}:00.000Z`);
+
+    // Verifica conflito usando as horas formatadas pro Prisma
+    const reservaConflitante = await db.reserva.findFirst({
+      where: {
+        idAreaComum,
+        dataReserva: dateValue,
+        statusReserva: "CONFIRMADA",
+        AND: [
+          { horaInicio: { lt: horaFimPrisma } },
+          { horaFim: { gt: horaInicioPrisma } },
+        ],
+      },
+    });
+
+    if (reservaConflitante) {
+      return { success: false, message: "Esta área já possui uma reserva confirmada que conflita com este horário." };
+    }
+
     const destinatarios = await db.usuario.findMany({
       where: {
-        tipoUsuario: {
-          in: ["ADMINISTRADOR", "SINDICO"],
-        },
+        tipoUsuario: { in: ["ADMINISTRADOR", "SINDICO"] },
         status: "ATIVO",
       },
       select: { id: true },
@@ -145,17 +169,20 @@ export async function requestReservationAction(_: unknown, formData: FormData) {
           idMorador: currentUser.id,
           idAreaComum,
           dataReserva: dateValue,
-          horaInicio: start,
-          horaFim: end,
-          statusReserva: "PENDENTE",
+          horaInicio: horaInicioPrisma, // Agora enviamos a hora exata
+          horaFim: horaFimPrisma,       // Agora enviamos a hora exata
+          statusReserva: "CONFIRMADA",
           observacaoSolicitacao: observacaoSolicitacao || null,
+          dataDecisao: new Date(), 
+          motivoDecisao: "Aprovação automática (Reserva Instantânea)",
+          idDecididoPor: currentUser.id,
         },
       });
 
       await tx.logAtividade.create({
         data: {
           idUsuario: currentUser.id,
-          acao: "SOLICITAR_RESERVA",
+          acao: "CRIAR_RESERVA_AUTOMATICA",
           entidade: "RESERVA",
           idEntidade: reserva.id,
           detalhes: {
@@ -172,35 +199,22 @@ export async function requestReservationAction(_: unknown, formData: FormData) {
         await tx.notificacao.createMany({
           data: destinatarios.map((destinatario) => ({
             idUsuario: destinatario.id,
-            tipo: "RESERVA_SOLICITADA",
-            titulo: "Nova solicitação de reserva",
-            mensagem: `${currentUser.nomeCompleto} solicitou a área ${area.nomeArea} em ${dataReserva} às ${horaInicio}.`,
+            tipo: "NOVA_RESERVA",
+            titulo: "Nova reserva registrada",
+            mensagem: `${currentUser.nomeCompleto} reservou a área ${area.nomeArea} para o dia ${dataReserva} das ${horaInicio} às ${horaFim}.`,
             idReserva: reserva.id,
           })),
         });
       }
     });
   } catch (error) {
-    if (
-      isInvalidReservaStatusValue(error, "PENDENTE") ||
-      isMissingTableError(error, "notificacao")
-    ) {
-      return { success: false, message: GENERIC_RESERVA_MESSAGE };
-    }
-
     if (error instanceof Prisma.PrismaClientKnownRequestError || error instanceof Prisma.PrismaClientUnknownRequestError) {
       const message = error.message;
-
-      if (message.includes("RESERVA_CONFLITO")) {
-        return { success: false, message: "Já existe reserva confirmada para a área nesse horário." };
-      }
-
       if (message.includes("LIMITE_RESERVAS")) {
         return { success: false, message: "O morador atingiu o limite mensal de reservas." };
       }
     }
-
-    return { success: false, message: "Não foi possível solicitar a reserva." };
+    return { success: false, message: "Não foi possível concluir a reserva." };
   }
 
   revalidatePath("/morador");
@@ -210,7 +224,7 @@ export async function requestReservationAction(_: unknown, formData: FormData) {
   revalidatePath("/sindico");
   revalidatePath("/sindico/reservas");
 
-  return { success: true, message: "Reserva solicitada com sucesso." };
+  return { success: true, message: "Reserva confirmada com sucesso!" };
 }
 
 export async function cancelOwnReservationAction(formData: FormData) {

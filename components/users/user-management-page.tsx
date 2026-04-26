@@ -7,6 +7,7 @@ import { UserForm } from "@/components/users/user-form";
 import type { CurrentUser } from "@/lib/auth/current-user";
 import { isInvalidReservaStatusValue } from "@/lib/db-compat";
 import { db } from "@/lib/db";
+import { censurarTelefone } from "@/lib/utils";
 
 type UserManagementPageProps = {
   currentUser: CurrentUser;
@@ -14,6 +15,7 @@ type UserManagementPageProps = {
   pageTitle: string;
   pageSubtitle: string;
   editUserId?: number;
+  showForm?: boolean; 
 };
 
 export async function UserManagementPage({
@@ -22,6 +24,7 @@ export async function UserManagementPage({
   pageTitle,
   pageSubtitle,
   editUserId,
+  showForm, // <- ESQUECI DE RECEBER ESSA VARIÁVEL AQUI ANTES!
 }: UserManagementPageProps) {
   const [users, editingUser] = await Promise.all([getUsersForManagement(), getEditingUser(editUserId)]);
 
@@ -30,6 +33,9 @@ export async function UserManagementPage({
     administradores: users.filter((user) => user.tipoUsuario === "ADMINISTRADOR").length,
     sindicos: users.filter((user) => user.tipoUsuario === "SINDICO").length,
   };
+
+  // Agora o formulário aparece se estiver editando alguém OU se showForm for verdadeiro
+  const isFormVisible = !!editingUser || showForm;
 
   return (
     <>
@@ -53,7 +59,10 @@ export async function UserManagementPage({
         </article>
       </section>
 
-      <UserForm editingUser={editingUser} cancelHref={`${basePath}#lista-usuarios`} />
+      {/* Renderiza o formulário apenas se estiver visível */}
+      {isFormVisible && (
+         <UserForm editingUser={editingUser} cancelHref={`${basePath}#lista-usuarios`} />
+      )}
 
       <section id="lista-usuarios" className="rounded-[28px] bg-surface-container-lowest p-6 shadow-sm">
         <div className="mb-6 flex items-center justify-between gap-4">
@@ -63,6 +72,13 @@ export async function UserManagementPage({
             </p>
             <h2 className="mt-2 text-2xl font-black">Usuários cadastrados</h2>
           </div>
+          {/* Novo Botão de Cadastrar */}
+           <Link
+            href={`${basePath}?edit=new#lista-usuarios`} // Aqui usamos uma tática de roteamento para abrir o form limpo
+            className="rounded-[12px] bg-cta-gradient px-4 py-2 text-sm font-bold text-white shadow-lg transition hover:opacity-90"
+          >
+            Cadastrar usuário
+          </Link>
         </div>
 
         <div className="overflow-x-auto">
@@ -72,7 +88,7 @@ export async function UserManagementPage({
                 <th className="pb-2">Usuário</th>
                 <th className="pb-2">Perfil</th>
                 <th className="pb-2">Status</th>
-                <th className="pb-2">Permissões</th>
+                {/* Removido o cabeçalho de Permissões */}
                 <th className="pb-2 text-right">Ações</th>
               </tr>
             </thead>
@@ -90,6 +106,10 @@ export async function UserManagementPage({
                     <td className="rounded-l-[18px] px-4 py-4">
                       <p className="font-semibold text-on-surface">{user.nomeCompleto}</p>
                       <p className="text-sm text-on-surface-variant">{user.email}</p>
+                      {/* Telefone Censurado Adicionado Aqui */}
+                      {user.telefone && (
+                         <p className="mt-1 text-sm text-on-surface-variant">{censurarTelefone(user.telefone)}</p>
+                      )}
                       {user.tipoUsuario === "MORADOR" ? (
                         <p className="mt-1 text-xs text-on-surface-variant">
                           Bloco {user.bloco || "-"} · Apto {user.apartamento || "-"}
@@ -110,39 +130,38 @@ export async function UserManagementPage({
                         {user.status}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-sm text-on-surface-variant">
-                      {user.permissoesAcesso.length > 0
-                        ? user.permissoesAcesso.join(", ")
-                        : user.tipoUsuario === "MORADOR"
-                          ? "N/A"
-                          : "Sem permissões extras"}
-                    </td>
+                    {/* Removida a célula de Permissões */}
                     <td className="rounded-r-[18px] px-4 py-4">
                       <div className="flex justify-end gap-2">
+                         {/* Botão Editar Colorido */}
                         <Link
                           href={editHref}
-                          className="rounded-[12px] border border-outline-variant/40 px-3 py-2 text-xs font-semibold text-on-surface transition hover:border-primary hover:text-primary"
+                          className="rounded-[12px] border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-50"
                         >
                           Editar
                         </Link>
+                        
+                         {/* Botão Ativar/Desativar Colorido */}
                         <form action={toggleUserStatusAction}>
                           <input type="hidden" name="id" value={user.id} />
                           <button
                             type="submit"
-                            className="rounded-[12px] border border-outline-variant/40 px-3 py-2 text-xs font-semibold text-on-surface transition hover:border-primary hover:text-primary"
+                            className="rounded-[12px] border border-orange-200 px-3 py-2 text-xs font-semibold text-orange-700 transition hover:bg-orange-50"
                           >
                             {user.status === "ATIVO" ? "Desativar" : "Ativar"}
                           </button>
                         </form>
+
+                        {/* Botão Excluir Colorido e sem texto de reserva */}
                         {user.tipoUsuario === "MORADOR" ? (
                           <form action={deleteMoradorAction}>
                             <input type="hidden" name="id" value={user.id} />
                             <button
                               type="submit"
                               disabled={!canDeleteMorador}
-                              className="rounded-[12px] border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                              className="rounded-[12px] border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 disabled:bg-slate-50"
                             >
-                              {canDeleteMorador ? "Excluir" : "Reserva ativa"}
+                              Excluir
                             </button>
                           </form>
                         ) : null}
@@ -159,6 +178,8 @@ export async function UserManagementPage({
   );
 }
 
+// ... as funções de busca (getUsersForManagement, getEditingUser, formatRole) permanecem iguais.
+// Não precisa colá-las de novo se não quiser, deixei elas como no original.
 async function getUsersForManagement() {
   try {
     return await db.usuario.findMany({

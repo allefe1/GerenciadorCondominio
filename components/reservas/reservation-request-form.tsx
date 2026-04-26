@@ -123,7 +123,7 @@ export function ReservationRequestForm({
         disabled={isPending}
         className="rounded-[14px] bg-cta-gradient px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isPending ? "Solicitando..." : "Solicitar reserva"}
+        {isPending ? "Confirmando..." : "Confirmar reserva"}
       </button>
     </form>
   );
