@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Home, LogOut, Shield, UserCog, UserRound } from "lucide-react";
+import { CalendarDays, Home, LogOut, Shield, UserCog, UserRound, Map } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/auth";
 
@@ -15,12 +15,15 @@ type SidebarProps = {
   navItems: NavItem[];
 };
 
+// Adicionamos o "Map" para as chaves "Áreas" e "Areas" (com e sem acento por garantia)
 const iconMap: Record<string, typeof Home> = {
   Home,
   Reservas: CalendarDays,
   Perfil: UserRound,
   Usuarios: UserCog,
   Seguranca: Shield,
+  Áreas: Map,
+  Areas: Map, 
 };
 
 export function Sidebar({ navItems }: SidebarProps) {
@@ -34,7 +37,8 @@ export function Sidebar({ navItems }: SidebarProps) {
       <nav className="flex flex-1 flex-col gap-3">
         {navItems.map(({ href, label }) => {
           const Icon = iconMap[label] ?? Home;
-          const active = pathname === href;
+          // Verifica se o pathname começa com o href para manter o botão ativo mesmo nas sub-telas (ex: /admin/areas?edit=new)
+          const active = pathname === href || pathname.startsWith(`${href}/`) || (href !== "/admin" && href !== "/sindico" && pathname.startsWith(href));
 
           return (
             <Link

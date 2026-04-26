@@ -103,18 +103,6 @@ export function UserForm({ editingUser, cancelHref }: UserFormProps) {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-semibold" htmlFor="senha">
-            {editingUser ? "Nova senha opcional" : "Senha inicial"}
-          </label>
-          <input
-            id="senha"
-            name="senha"
-            type="password"
-            className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-          />
-        </div>
-
         {isMorador ? (
           <>
             <div className="space-y-2">

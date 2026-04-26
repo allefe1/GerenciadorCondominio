@@ -17,10 +17,19 @@ export function getNavItems(role: TipoUsuario) {
   ];
 
   if (role === "ADMINISTRADOR" || role === "SINDICO") {
-    base.splice(1, 0, {
-      href: role === "ADMINISTRADOR" ? "/admin/usuarios" : "/sindico/usuarios",
-      label: "Usuarios",
-    });
+    // Injetamos Usuários e Áreas de uma vez só!
+    base.splice(
+      1,
+      0,
+      {
+        href: role === "ADMINISTRADOR" ? "/admin/usuarios" : "/sindico/usuarios",
+        label: "Usuarios",
+      },
+      {
+        href: role === "ADMINISTRADOR" ? "/admin/areas" : "/sindico/areas",
+        label: "Areas",
+      }
+    );
   }
 
   return base;

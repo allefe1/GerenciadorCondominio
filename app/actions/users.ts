@@ -21,8 +21,8 @@ function getClientIp(ip: string | null) {
 }
 
 const profileSchema = z.object({
-  nomeCompleto: z.string().min(3, "Informe o nome completo."),
-  telefone: z.string().optional(),
+  nomeCompleto: z.string().trim().min(1, "O nome não pode estar vazio.").min(3, "Informe o nome completo."),
+  telefone: z.string().trim().optional(),
 });
 
 const passwordSchema = z.object({
@@ -34,11 +34,11 @@ const passwordSchema = z.object({
 const userSchema = z.object({
   id: z.string().optional(),
   tipoUsuario: z.enum(["MORADOR", "ADMINISTRADOR", "SINDICO"]),
-  nomeCompleto: z.string().min(3, "Informe o nome completo."),
-  email: z.string().email("Informe um e-mail válido."),
-  telefone: z.string().optional(),
-  apartamento: z.string().optional(),
-  bloco: z.string().optional(),
+  nomeCompleto: z.string().trim().min(1, "O nome não pode estar vazio.").min(3, "Informe o nome completo."),
+  email: z.string().trim().min(1, "O e-mail não pode estar vazio.").email("Informe um e-mail válido."),
+  telefone: z.string().trim().optional(),
+  apartamento: z.string().trim().optional(),
+  bloco: z.string().trim().optional(),
   permissoesAcesso: z.array(z.string()).optional(),
   senha: z.string().optional(),
 });
@@ -134,16 +134,18 @@ export async function changeMyPasswordAction(_: unknown, formData: FormData) {
 
 export async function upsertUserAction(_: unknown, formData: FormData) {
   const currentUser = await requireRole(["ADMINISTRADOR", "SINDICO"]);
+
+  // Trata os valores null convertendo para undefined ou string vazia para o Zod
   const parsed = userSchema.safeParse({
-    id: formData.get("id"),
+    id: formData.get("id") || undefined,
     tipoUsuario: formData.get("tipoUsuario"),
-    nomeCompleto: formData.get("nomeCompleto"),
-    email: formData.get("email"),
-    telefone: formData.get("telefone"),
-    apartamento: formData.get("apartamento"),
-    bloco: formData.get("bloco"),
+    nomeCompleto: formData.get("nomeCompleto") || "",
+    email: formData.get("email") || "",
+    telefone: formData.get("telefone") || undefined,
+    apartamento: formData.get("apartamento") || undefined,
+    bloco: formData.get("bloco") || undefined,
     permissoesAcesso: formData.getAll("permissoesAcesso"),
-    senha: formData.get("senha"),
+    senha: formData.get("senha") || undefined,
   });
 
   if (!parsed.success) {
@@ -162,13 +164,23 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
     return { success: false, message: "Morador exige apartamento e bloco." };
   }
 
-  if (!data.id && !data.senha) {
-    return { success: false, message: "Informe uma senha inicial para o novo usuário." };
+  // Gera a senha padrão: Primeira palavra do nome (Capitalizada) + @123
+  const primeiroNome = data.nomeCompleto.trim().split(" ")[0];
+  const nomeFormatado = primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
+  // Valida a senha apenas se o admin decidir digitar uma senha manualmente
+  // Pega o tipo de usuário e capitaliza (Ex: MORADOR vira Morador, SINDICO vira Sindico)
+  const prefixo = data.tipoUsuario.charAt(0).toUpperCase() + data.tipoUsuario.slice(1).toLowerCase();
+  
+  // Tenta pegar os 3 últimos dígitos do telefone. Se não tiver, usa "123" como plano B.
+  let sufixo = "123";
+  if (data.telefone) {
+    const apenasNumeros = data.telefone.replace(/\D/g, ""); // Tira os parênteses e traços da máscara
+    if (apenasNumeros.length >= 3) {
+      sufixo = apenasNumeros.slice(-3);
+    }
   }
-
-  if (data.senha && !isStrongPassword(data.senha)) {
-    return { success: false, message: getPasswordPolicyMessage() };
-  }
+  
+  const senhaPadrao = `${prefixo}@${sufixo}`; // Ex: Morador@003, Administrador@123
 
   const commonData = {
     tipoUsuario: data.tipoUsuario,
@@ -183,11 +195,11 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
   try {
     if (data.id) {
       const updateId = parsedId as number;
-
       await db.usuario.update({
         where: { id: updateId },
         data: {
           ...commonData,
+          // Se o admin preencheu a senha na edição, atualiza. Se não, mantém a atual.
           ...(data.senha ? { senha: await hash(data.senha, 12) } : {}),
         },
       });
@@ -203,11 +215,15 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
         },
       });
     } else {
+      // Define a senha final: a digitada no form ou a gerada automaticamente
+      const senhaFinal = data.senha ? data.senha : senhaPadrao;
+
       const created = await db.usuario.create({
         data: {
           ...commonData,
-          senha: await hash(data.senha!, 12),
+          senha: await hash(senhaFinal, 12),
           status: "ATIVO",
+          primeiroAcesso: true, // Garante o fluxo de troca de senha no primeiro login
         },
       });
 
@@ -217,7 +233,7 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
           acao: "CRIAR_USUARIO",
           entidade: "USUARIO",
           idEntidade: created.id,
-          detalhes: commonData,
+          detalhes: { ...commonData, gerouSenhaAutomatica: !data.senha },
           ipAddress: getClientIp((await headers()).get("x-forwarded-for")),
         },
       });
