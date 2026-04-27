@@ -37,8 +37,10 @@ export function Sidebar({ navItems }: SidebarProps) {
       <nav className="flex flex-1 flex-col gap-3">
         {navItems.map(({ href, label }) => {
           const Icon = iconMap[label] ?? Home;
-          // Verifica se o pathname começa com o href para manter o botão ativo mesmo nas sub-telas (ex: /admin/areas?edit=new)
-          const active = pathname === href || pathname.startsWith(`${href}/`) || (href !== "/admin" && href !== "/sindico" && pathname.startsWith(href));
+          const isBaseRoute = href === "/admin" || href === "/sindico" || href === "/morador";
+          const active = isBaseRoute
+            ? pathname === href
+            : pathname === href || pathname.startsWith(`${href}/`);
 
           return (
             <Link

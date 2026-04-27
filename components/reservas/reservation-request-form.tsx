@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useActionState } from "react";
 
 import { requestReservationAction } from "@/app/actions/reservas";
 
@@ -28,12 +28,41 @@ export function ReservationRequestForm({
   defaultDate,
 }: ReservationRequestFormProps) {
   const [state, formAction, isPending] = useActionState(requestReservationAction, initialState);
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!isOpen) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-[28px] border border-dashed border-outline-variant/30 bg-surface-container-lowest p-10 text-center shadow-sm">
+        <h2 className="text-xl font-bold">Deseja reservar um espaço?</h2>
+        <p className="mt-2 text-sm text-on-surface-variant">
+          Verifique a disponibilidade ao lado ou solicite diretamente por aqui.
+        </p>
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="mt-6 rounded-full bg-[#623CEA] px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#5028D5]"
+        >
+          + Cadastrar nova reserva
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form action={formAction} className="space-y-5 rounded-[28px] bg-surface-container-lowest p-6 shadow-sm">
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">Nova reserva</p>
-        <h2 className="mt-2 text-2xl font-black">Solicitar área comum</h2>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">Nova reserva</p>
+          <h2 className="mt-2 text-2xl font-black">Solicitar área comum</h2>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="rounded-full bg-surface-container p-2 text-on-surface-variant transition hover:bg-surface-container-highest hover:text-on-surface"
+          aria-label="Fechar formulário"
+        >
+          ✕
+        </button>
       </div>
 
       <div className="grid gap-5 xl:grid-cols-12">
@@ -118,13 +147,22 @@ export function ReservationRequestForm({
         </div>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-[14px] bg-cta-gradient px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        {isPending ? "Confirmando..." : "Confirmar reserva"}
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-[14px] bg-[#623CEA] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#5028D5] disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isPending ? "Confirmando..." : "Confirmar reserva"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="rounded-[14px] px-5 py-3 text-sm font-semibold text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface"
+        >
+          Cancelar
+        </button>
+      </div>
     </form>
   );
 }
