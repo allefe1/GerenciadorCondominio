@@ -8,7 +8,7 @@ export default async function AdminReservasPage() {
     <ReservationManagementPage
       currentUser={currentUser}
       pageTitle="Gestão de reservas"
-      pageSubtitle="Aprove, reprove e acompanhe o calendário operacional"
+      pageSubtitle="Acompanhe o calendário e histórico de reservas do condomínio"
     />
   );
 }

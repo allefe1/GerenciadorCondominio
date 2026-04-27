@@ -22,7 +22,7 @@ const areaSchema = z.object({
   capacidadeMaxima: z.coerce.number().min(1, "A capacidade deve ser de pelo menos 1 pessoa."),
   regrasUso: z.string().optional(),
   valorReserva: z.coerce.number().min(0, "O valor não pode ser negativo."),
-  status: z.enum(["DISPONIVEL", "MANUTENCAO", "INATIVA"]).default("DISPONIVEL"),
+  status: z.enum(["DISPONIVEL", "INDISPONIVEL"]).default("DISPONIVEL"),
 });
 
 export async function upsertAreaAction(_: unknown, formData: FormData) {
@@ -117,7 +117,8 @@ export async function deleteAreaAction(formData: FormData) {
   const id = Number(formData.get("id"));
 
   if (Number.isNaN(id) || id <= 0) {
-    return { success: false, message: "Identificador inválido." };
+    console.error("Identificador inválido para delete.");
+    return;
   }
 
   try {
@@ -138,7 +139,7 @@ export async function deleteAreaAction(formData: FormData) {
     });
   } catch (error) {
     console.error("ERRO AO DELETAR AREA:", error);
-    return { success: false, message: "Não foi possível excluir a área." };
+    return;
   }
 
   revalidatePath("/admin/areas");

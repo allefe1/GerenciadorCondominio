@@ -88,8 +88,6 @@ export default async function AreasPage({
                           className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
                             area.status === "DISPONIVEL"
                               ? "bg-emerald-100 text-emerald-800"
-                              : area.status === "MANUTENCAO"
-                              ? "bg-amber-100 text-amber-800"
                               : "bg-red-100 text-red-800"
                           }`}
                         >

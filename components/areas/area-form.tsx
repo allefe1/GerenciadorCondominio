@@ -117,8 +117,7 @@ export function AreaForm({ editingArea, cancelHref }: AreaFormProps) {
             className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           >
             <option value="DISPONIVEL">Disponível</option>
-            <option value="MANUTENCAO">Em Manutenção</option>
-            <option value="INATIVA">Inativa</option>
+            <option value="INDISPONIVEL">Indisponível</option>
           </select>
         </div>
 

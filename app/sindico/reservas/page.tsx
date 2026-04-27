@@ -7,8 +7,8 @@ export default async function SindicoReservasPage() {
   return (
     <ReservationManagementPage
       currentUser={currentUser}
-      pageTitle="Aprovação de reservas"
-      pageSubtitle="Supervisione solicitações e o calendário de áreas comuns"
+      pageTitle="Gestão de reservas"
+      pageSubtitle="Acompanhe o calendário e histórico de reservas do condomínio"
     />
   );
 }
