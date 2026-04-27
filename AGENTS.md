@@ -27,6 +27,11 @@
 - Auth error messages in server actions should reference Supabase/DATABASE_URL, not local bootstrap/docker.
 - Next.js dev indicator is disabled (`devIndicators: false` in `next.config.ts`).
 - `staleTimes` experimental feature is enabled for client-side router cache (180s dynamic, 300s static).
+- **Timezones**: When doing local date comparisons (e.g. checking if a reservation is in the past to disable cancellation), use local getters (`getFullYear`, `getHours`) instead of `toISOString()` to prevent UTC offset bugs.
+
+## Performance & State Management
+- **Database Deduplication**: `getCurrentUser()` in `lib/auth/current-user.ts` is wrapped in `React.cache()`. This prevents the Layout and the Page from making redundant parallel DB queries when checking authentication.
+- **Form Validation Preservation**: When a Zod validation fails in a Server Action (`useActionState`), Next.js 15 resets uncontrolled native inputs. To prevent wiping the user's data, actions must return `fields: Object.fromEntries(formData.entries())` and the frontend inputs must use `defaultValue={state.fields?.fieldName ?? defaultValue}`.
 
 ## Architecture: Layout-Based Navigation
 - Each role group (`/morador`, `/admin`, `/sindico`, `/perfil`) has a **shared `layout.tsx`** that renders the sidebar + header with user info.

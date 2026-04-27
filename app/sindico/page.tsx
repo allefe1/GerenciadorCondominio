@@ -1,13 +1,13 @@
 import { PageHeader } from "@/components/dashboard/page-header";
 import { requireRole } from "@/lib/auth/current-user";
-import { countReservasPendentes } from "@/lib/db-compat";
+import { countReservasAbertas } from "@/lib/db-compat";
 import { db } from "@/lib/db";
 import Link from "next/link";
 
 export default async function SindicoPage() {
   const currentUser = await requireRole(["SINDICO"]);
-  const [pendencias, recentLogs] = await Promise.all([
-    countReservasPendentes(),
+  const [reservasAgendadas, recentLogs] = await Promise.all([
+    countReservasAbertas(),
     db.logAtividade.findMany({
       take: 5,
       orderBy: {
@@ -48,13 +48,13 @@ export default async function SindicoPage() {
           </div>
         </article>
         <article className="rounded-[24px] bg-gradient-to-br from-[#FF8C6B] to-[#FFB088] p-8 text-white">
-          <p className="text-sm text-white/85">Pendências</p>
-          <h2 className="mt-3 text-4xl font-black">{pendencias}</h2>
+          <p className="text-sm text-white/85">Reservas agendadas</p>
+          <h2 className="mt-3 text-4xl font-black">{reservasAgendadas}</h2>
           <Link
             href="/sindico/reservas"
             className="mt-5 inline-flex rounded-[12px] border border-white/30 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
           >
-            Revisar reservas
+            Acompanhar reservas
           </Link>
         </article>
       </section>

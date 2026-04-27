@@ -29,7 +29,7 @@ export default async function AdminPage() {
           <h2 className="mt-3 text-4xl font-black">{areas}</h2>
         </article>
         <article className="rounded-[24px] bg-secondary-container p-6 text-white">
-          <p className="text-sm text-white/80">Reservas abertas</p>
+          <p className="text-sm text-white/80">Reservas agendadas</p>
           <h2 className="mt-3 text-4xl font-black">{reservasFuturas}</h2>
         </article>
       </section>
@@ -53,9 +53,9 @@ export default async function AdminPage() {
 
         <article className="rounded-[28px] bg-surface-container-lowest p-6 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">Reservas</p>
-          <h2 className="mt-2 text-2xl font-black">Aprove ou reprove solicitações</h2>
+          <h2 className="mt-2 text-2xl font-black">Acompanhe as reservas</h2>
           <p className="mt-3 text-sm text-on-surface-variant">
-            O painel de reservas centraliza fila pendente, agenda confirmada e notificações aos moradores.
+            O painel de reservas centraliza a agenda confirmada e o histórico de utilização das áreas comuns pelos moradores.
           </p>
           <Link
             href="/admin/reservas"

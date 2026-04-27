@@ -60,7 +60,6 @@ export default async function SindicoAreasPage({
                 <tr>
                   <th className="pb-3 pr-4 font-semibold">Nome</th>
                   <th className="pb-3 pr-4 font-semibold">Capacidade</th>
-                  <th className="pb-3 pr-4 font-semibold">Valor (R$)</th>
                   <th className="pb-3 pr-4 font-semibold">Status</th>
                   <th className="pb-3 text-right font-semibold">Ações</th>
                 </tr>
@@ -77,12 +76,6 @@ export default async function SindicoAreasPage({
                     <tr key={area.id} className="transition hover:bg-surface-container-low/50">
                       <td className="py-4 pr-4 font-medium text-on-surface">{area.nomeArea}</td>
                       <td className="py-4 pr-4 text-on-surface-variant">{area.capacidadeMaxima} pessoas</td>
-                      <td className="py-4 pr-4 text-on-surface-variant">
-                        {Number(area.valorReserva).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </td>
                       <td className="py-4 pr-4">
                         <span
                           className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${

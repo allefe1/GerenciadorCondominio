@@ -61,10 +61,12 @@ export async function UserManagementPage({
 
       {/* Renderiza o formulário apenas se estiver visível */}
       {isFormVisible && (
-         <UserForm editingUser={editingUser} cancelHref={`${basePath}#lista-usuarios`} />
+        <div id="form-usuario" className="scroll-mt-6">
+          <UserForm editingUser={editingUser} cancelHref={`${basePath}#lista-usuarios`} />
+        </div>
       )}
 
-      <section id="lista-usuarios" className="rounded-[28px] bg-surface-container-lowest p-6 shadow-sm">
+      <section id="lista-usuarios" className="rounded-[28px] bg-surface-container-lowest p-6 shadow-sm scroll-mt-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-on-surface-variant">
@@ -74,7 +76,7 @@ export async function UserManagementPage({
           </div>
           {/* Novo Botão de Cadastrar */}
            <Link
-            href={`${basePath}?edit=new#lista-usuarios`} // Aqui usamos uma tática de roteamento para abrir o form limpo
+            href={`${basePath}?edit=new#form-usuario`} // Rola para o form
             className="rounded-[12px] bg-cta-gradient px-4 py-2 text-sm font-bold text-white shadow-lg transition hover:opacity-90"
           >
             Cadastrar usuário
@@ -96,8 +98,8 @@ export async function UserManagementPage({
               {users.map((user) => {
                 const editHref =
                   currentUser.tipoUsuario === "ADMINISTRADOR"
-                    ? `/admin/usuarios?edit=${user.id}#lista-usuarios`
-                    : `/sindico/usuarios?edit=${user.id}#lista-usuarios`;
+                    ? `/admin/usuarios?edit=${user.id}#form-usuario`
+                    : `/sindico/usuarios?edit=${user.id}#form-usuario`;
                 const canDeleteMorador =
                   user.tipoUsuario === "MORADOR" && user.reservasMorador.length === 0;
 

@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import type { TipoUsuario, Usuario } from "@prisma/client";
 
 import { dashboardRoutes } from "@/lib/navigation";
@@ -22,7 +23,7 @@ export type CurrentUser = Pick<
   | "permissoesAcesso"
 >;
 
-export async function getCurrentUser(): Promise<CurrentUser | null> {
+export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
 
   if (!token) {
@@ -54,7 +55,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   } catch {
     return null;
   }
-}
+});
 
 export async function requireAuthenticatedUser() {
   const user = await getCurrentUser();

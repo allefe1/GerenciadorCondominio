@@ -21,8 +21,8 @@ function getClientIp(ip: string | null) {
 }
 
 const profileSchema = z.object({
-  nomeCompleto: z.string().trim().min(1, "O nome não pode estar vazio.").min(3, "Informe o nome completo."),
-  telefone: z.string().trim().optional(),
+  nomeCompleto: z.string().trim().min(1, "O nome não pode estar vazio.").min(3, "Informe o nome completo.").regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/, "O nome deve conter apenas letras e espaços."),
+  telefone: z.string().trim().refine((val) => !val || /^[\d\s\-\+\(\)]+$/.test(val), "O telefone deve conter apenas números e símbolos válidos.").optional(),
 });
 
 const passwordSchema = z.object({
@@ -34,9 +34,9 @@ const passwordSchema = z.object({
 const userSchema = z.object({
   id: z.string().optional(),
   tipoUsuario: z.enum(["MORADOR", "ADMINISTRADOR", "SINDICO"]),
-  nomeCompleto: z.string().trim().min(1, "O nome não pode estar vazio.").min(3, "Informe o nome completo."),
+  nomeCompleto: z.string().trim().min(1, "O nome não pode estar vazio.").min(3, "Informe o nome completo.").regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/, "O nome deve conter apenas letras e espaços."),
   email: z.string().trim().min(1, "O e-mail não pode estar vazio.").email("Informe um e-mail válido."),
-  telefone: z.string().trim().optional(),
+  telefone: z.string().trim().refine((val) => !val || /^[\d\s\-\+\(\)]+$/.test(val), "O telefone deve conter apenas números e símbolos válidos.").optional(),
   apartamento: z.string().trim().optional(),
   bloco: z.string().trim().optional(),
   permissoesAcesso: z.array(z.string()).optional(),
@@ -149,7 +149,11 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
   });
 
   if (!parsed.success) {
-    return { success: false, message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+    return { 
+      success: false, 
+      message: parsed.error.issues[0]?.message ?? "Dados inválidos.",
+      fields: Object.fromEntries(formData.entries())
+    };
   }
 
   const data = parsed.data;
@@ -157,11 +161,11 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
   const isMorador = requiresHousingFields(data.tipoUsuario);
 
   if (data.id && (parsedId === null || !Number.isInteger(parsedId) || parsedId <= 0)) {
-    return { success: false, message: "Identificador de usuário inválido." };
+    return { success: false, message: "Identificador de usuário inválido.", fields: Object.fromEntries(formData.entries()) };
   }
 
   if (isMorador && (!data.apartamento || !data.bloco)) {
-    return { success: false, message: "Morador exige apartamento e bloco." };
+    return { success: false, message: "Morador exige apartamento e bloco.", fields: Object.fromEntries(formData.entries()) };
   }
 
   // Gera a senha padrão: Primeira palavra do nome (Capitalizada) + @123
@@ -240,10 +244,10 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
     }
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      return { success: false, message: "Já existe usuário com este e-mail." };
+      return { success: false, message: "Já existe usuário com este e-mail.", fields: Object.fromEntries(formData.entries()) };
     }
 
-    return { success: false, message: "Não foi possível salvar o usuário." };
+    return { success: false, message: "Não foi possível salvar o usuário.", fields: Object.fromEntries(formData.entries()) };
   }
 
   revalidatePath("/admin/usuarios");

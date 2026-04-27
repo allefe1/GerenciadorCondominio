@@ -26,6 +26,7 @@ type UserFormProps = {
 const initialState = {
   success: false,
   message: "",
+  fields: {} as Record<string, string | undefined>,
 };
 
 export function UserForm({ editingUser, cancelHref }: UserFormProps) {
@@ -56,7 +57,7 @@ export function UserForm({ editingUser, cancelHref }: UserFormProps) {
           <select
             id="tipoUsuario"
             name="tipoUsuario"
-            defaultValue={editingUser?.tipoUsuario ?? "MORADOR"}
+            defaultValue={state.fields?.tipoUsuario ?? editingUser?.tipoUsuario ?? "MORADOR"}
             onChange={(event) => setTipoUsuario(event.target.value as TipoUsuario)}
             className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           >
@@ -73,7 +74,7 @@ export function UserForm({ editingUser, cancelHref }: UserFormProps) {
           <input
             id="nomeCompleto"
             name="nomeCompleto"
-            defaultValue={editingUser?.nomeCompleto ?? ""}
+            defaultValue={state.fields?.nomeCompleto ?? editingUser?.nomeCompleto ?? ""}
             className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           />
         </div>
@@ -86,7 +87,7 @@ export function UserForm({ editingUser, cancelHref }: UserFormProps) {
             id="email"
             name="email"
             type="email"
-            defaultValue={editingUser?.email ?? ""}
+            defaultValue={state.fields?.email ?? editingUser?.email ?? ""}
             className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           />
         </div>
@@ -98,7 +99,7 @@ export function UserForm({ editingUser, cancelHref }: UserFormProps) {
           <input
             id="telefone"
             name="telefone"
-            defaultValue={editingUser?.telefone ?? ""}
+            defaultValue={state.fields?.telefone ?? editingUser?.telefone ?? ""}
             className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           />
         </div>
@@ -112,7 +113,7 @@ export function UserForm({ editingUser, cancelHref }: UserFormProps) {
               <input
                 id="apartamento"
                 name="apartamento"
-                defaultValue={editingUser?.apartamento ?? ""}
+                defaultValue={state.fields?.apartamento ?? editingUser?.apartamento ?? ""}
                 className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
               />
             </div>
@@ -123,7 +124,7 @@ export function UserForm({ editingUser, cancelHref }: UserFormProps) {
               <input
                 id="bloco"
                 name="bloco"
-                defaultValue={editingUser?.bloco ?? ""}
+                defaultValue={state.fields?.bloco ?? editingUser?.bloco ?? ""}
                 className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
               />
             </div>
@@ -141,7 +142,7 @@ export function UserForm({ editingUser, cancelHref }: UserFormProps) {
                     type="checkbox"
                     name="permissoesAcesso"
                     value={permission}
-                    defaultChecked={editingUser?.permissoesAcesso.includes(permission)}
+                    defaultChecked={state.fields ? state.fields.permissoesAcesso?.includes(permission) : editingUser?.permissoesAcesso.includes(permission)}
                     className="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary/20"
                   />
                   {permission}

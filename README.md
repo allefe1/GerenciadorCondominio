@@ -24,8 +24,8 @@ O projeto já entrega:
 - perfis `MORADOR`, `ADMINISTRADOR` e `SINDICO`
 - gestão de usuários
 - meu perfil e troca de senha
-- solicitação, cancelamento, aprovação e reprovação de reservas
-- notificações para decisões de reserva
+- solicitação, confirmação automática e cancelamento de reservas
+- acompanhamento de histórico e utilização pelos administradores
 
 ## Pré-requisitos
 
@@ -124,11 +124,11 @@ Abra:
 
 1. Entre como morador.
 2. Acesse `/morador/reservas`.
-3. Solicite uma reserva futura.
+3. Agende uma reserva futura (que será confirmada automaticamente).
 4. Entre como admin ou síndico.
 5. Acesse `/admin/reservas` ou `/sindico/reservas`.
-6. Aprove ou reprove a solicitação.
-7. Volte ao morador e confira notificações e histórico.
+6. Acompanhe a reserva na agenda e o histórico de utilização.
+7. Volte ao morador e teste o cancelamento da reserva.
 
 ## Rotas principais
 

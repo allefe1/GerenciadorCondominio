@@ -45,6 +45,7 @@ export function AreaForm({ editingArea, cancelHref }: AreaFormProps) {
 
       {/* Se estiver editando, envia o ID escondido para o backend */}
       {editingArea ? <input type="hidden" name="id" value={editingArea.id} /> : null}
+      <input type="hidden" name="redirectUrl" value={cancelHref} />
 
       <div className="grid gap-5 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
@@ -86,22 +87,6 @@ export function AreaForm({ editingArea, cancelHref }: AreaFormProps) {
             min="1"
             required
             defaultValue={editingArea?.capacidadeMaxima ?? ""}
-            className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-semibold" htmlFor="valorReserva">
-            Valor da Reserva (R$)
-          </label>
-          <input
-            id="valorReserva"
-            name="valorReserva"
-            type="number"
-            step="0.01"
-            min="0"
-            required
-            defaultValue={editingArea ? Number(editingArea.valorReserva) : 0}
             className="w-full rounded-[14px] border border-outline-variant/40 bg-white px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           />
         </div>

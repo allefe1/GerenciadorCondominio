@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
@@ -21,7 +22,6 @@ const areaSchema = z.object({
   descricao: z.string().optional(),
   capacidadeMaxima: z.coerce.number().min(1, "A capacidade deve ser de pelo menos 1 pessoa."),
   regrasUso: z.string().optional(),
-  valorReserva: z.coerce.number().min(0, "O valor não pode ser negativo."),
   status: z.enum(["DISPONIVEL", "INDISPONIVEL"]).default("DISPONIVEL"),
 });
 
@@ -34,7 +34,6 @@ export async function upsertAreaAction(_: unknown, formData: FormData) {
     descricao: formData.get("descricao") || "",
     capacidadeMaxima: formData.get("capacidadeMaxima"),
     regrasUso: formData.get("regrasUso") || "",
-    valorReserva: formData.get("valorReserva"),
     status: formData.get("status") || "DISPONIVEL",
   });
 
@@ -54,7 +53,7 @@ export async function upsertAreaAction(_: unknown, formData: FormData) {
     descricao: data.descricao || null,
     capacidadeMaxima: data.capacidadeMaxima,
     regrasUso: data.regrasUso || null,
-    valorReserva: data.valorReserva,
+    valorReserva: 0,
     status: data.status,
   };
 
@@ -104,6 +103,11 @@ export async function upsertAreaAction(_: unknown, formData: FormData) {
 
   revalidatePath("/admin/areas");
   revalidatePath("/sindico/areas");
+
+  const redirectUrl = formData.get("redirectUrl");
+  if (redirectUrl && typeof redirectUrl === "string") {
+    redirect(redirectUrl);
+  }
 
   return {
     success: true,
