@@ -14,17 +14,23 @@ export function startOfDay(date: string) {
 
 export function formatDateBR(date: Date) {
   return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "UTC",
     dateStyle: "short",
   }).format(date);
 }
 
 export function formatTimeBR(date: Date) {
   return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "UTC",
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
 }
 
 export function getTodayDateInputValue() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }

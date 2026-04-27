@@ -183,15 +183,21 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
 
         <div className="grid gap-4">
           {minhasReservas.map((reserva) => {
-            const reservaDate = new Date(
-              reserva.dataReserva.getFullYear(),
-              reserva.dataReserva.getMonth(),
-              reserva.dataReserva.getDate(),
-              reserva.horaInicio.getHours(),
-              reserva.horaInicio.getMinutes(),
-              0
-            );
-            const isFuture = reservaDate > new Date();
+            const now = new Date();
+            const currentDateStr = now.getFullYear().toString() +
+              String(now.getMonth() + 1).padStart(2, '0') +
+              String(now.getDate()).padStart(2, '0') +
+              String(now.getHours()).padStart(2, '0') +
+              String(now.getMinutes()).padStart(2, '0');
+
+            const reservaDateStr = reserva.dataReserva.getUTCFullYear().toString() +
+              String(reserva.dataReserva.getUTCMonth() + 1).padStart(2, '0') +
+              String(reserva.dataReserva.getUTCDate()).padStart(2, '0') +
+              String(reserva.horaInicio.getUTCHours()).padStart(2, '0') +
+              String(reserva.horaInicio.getUTCMinutes()).padStart(2, '0');
+
+            const isFuture = reservaDateStr > currentDateStr;
+
             
             const canCancel =
               (reserva.statusReserva === "PENDENTE" || reserva.statusReserva === "CONFIRMADA") && isFuture;

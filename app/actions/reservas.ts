@@ -266,7 +266,7 @@ export async function cancelOwnReservationAction(formData: FormData) {
       where: { chave: "ANTECEDENCIA_MINIMA_CANCELAMENTO_HORAS" },
     });
 
-    const minHours = Number(config?.valor || "24");
+    const minHours = Number(config?.valor || "0");
     const minCancelDate = new Date(reservaDateTime.getTime() - minHours * 60 * 60 * 1000);
     if (new Date() > minCancelDate) {
       return;
@@ -279,6 +279,9 @@ export async function cancelOwnReservationAction(formData: FormData) {
           statusReserva: "CANCELADA",
           dataCancelamento: new Date(),
           idCanceladoPor: currentUser.id,
+          dataDecisao: null,
+          motivoDecisao: null,
+          idDecididoPor: null,
         },
       });
 
