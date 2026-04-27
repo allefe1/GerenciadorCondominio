@@ -164,7 +164,7 @@ if (user.primeiroAcesso) {
 
 export async function logoutAction() {
   (await cookies()).delete(SESSION_COOKIE);
-  redirect(loginPortalRoutes.MORADOR);
+  redirect("/login");
 }
 
 export async function requestPasswordResetAction(_: unknown, formData: FormData) {
@@ -261,7 +261,7 @@ export async function resetPasswordAction(
     return { success: false, message: "Token inválido ou expirado." };
   }
 
-  const hashedPassword = await hash(password, 12);
+  const hashedPassword = await hash(password, 10);
 
   try {
     await db.usuario.update({

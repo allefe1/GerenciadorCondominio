@@ -152,7 +152,7 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
     return { 
       success: false, 
       message: parsed.error.issues[0]?.message ?? "Dados inválidos.",
-      fields: Object.fromEntries(formData.entries())
+      fields: Object.fromEntries(formData.entries()) as Record<string, string>
     };
   }
 
@@ -161,11 +161,11 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
   const isMorador = requiresHousingFields(data.tipoUsuario);
 
   if (data.id && (parsedId === null || !Number.isInteger(parsedId) || parsedId <= 0)) {
-    return { success: false, message: "Identificador de usuário inválido.", fields: Object.fromEntries(formData.entries()) };
+    return { success: false, message: "Identificador de usuário inválido.", fields: Object.fromEntries(formData.entries()) as Record<string, string> };
   }
 
   if (isMorador && (!data.apartamento || !data.bloco)) {
-    return { success: false, message: "Morador exige apartamento e bloco.", fields: Object.fromEntries(formData.entries()) };
+    return { success: false, message: "Morador exige apartamento e bloco.", fields: Object.fromEntries(formData.entries()) as Record<string, string> };
   }
 
   // Gera a senha padrão: Primeira palavra do nome (Capitalizada) + @123
@@ -244,10 +244,10 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
     }
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      return { success: false, message: "Já existe usuário com este e-mail.", fields: Object.fromEntries(formData.entries()) };
+      return { success: false, message: "Já existe usuário com este e-mail.", fields: Object.fromEntries(formData.entries()) as Record<string, string> };
     }
 
-    return { success: false, message: "Não foi possível salvar o usuário.", fields: Object.fromEntries(formData.entries()) };
+    return { success: false, message: "Não foi possível salvar o usuário.", fields: Object.fromEntries(formData.entries()) as Record<string, string> };
   }
 
   revalidatePath("/admin/usuarios");

@@ -23,10 +23,15 @@ type UserFormProps = {
   cancelHref: string;
 };
 
-const initialState = {
+type ActionState = {
+  success: boolean;
+  message: string;
+  fields?: Record<string, string>;
+};
+
+const initialState: ActionState = {
   success: false,
   message: "",
-  fields: {} as Record<string, string | undefined>,
 };
 
 export function UserForm({ editingUser, cancelHref }: UserFormProps) {
