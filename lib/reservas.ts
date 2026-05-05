@@ -9,7 +9,7 @@ export function isReservableAreaName(name: string) {
 }
 
 export function startOfDay(date: string) {
-  return new Date(`${date}T00:00:00`);
+  return new Date(`${date}T00:00:00.000Z`);
 }
 
 export function formatDateBR(date: Date) {

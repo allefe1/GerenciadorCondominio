@@ -10,6 +10,7 @@ import {
   formatDateBR,
   formatTimeBR,
   getTodayDateInputValue,
+  startOfDay,
   NON_RESERVABLE_AREA_NAMES,
 } from "@/lib/reservas";
 
@@ -29,8 +30,13 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
     const date = new Date();
     date.setDate(date.getDate() + index);
 
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const localDateStr = `${year}-${month}-${day}`;
+
     return {
-      value: date.toISOString().slice(0, 10),
+      value: localDateStr,
       label: new Intl.DateTimeFormat("pt-BR", {
         weekday: "short",
         day: "2-digit",
@@ -70,7 +76,7 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
     db.reserva.findMany({
       where: {
         ...(selectedAreaId ? { idAreaComum: selectedAreaId } : {}),
-        dataReserva: new Date(`${selectedDate}T00:00:00`),
+        dataReserva: startOfDay(selectedDate),
         statusReserva: "CONFIRMADA",
       },
       include: {

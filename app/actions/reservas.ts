@@ -213,6 +213,9 @@ export async function requestReservationAction(_: unknown, formData: FormData) {
       if (message.includes("LIMITE_RESERVAS")) {
         return { success: false, message: "O morador atingiu o limite mensal de reservas." };
       }
+      if (message.includes("chk_data_reserva_futura")) {
+        return { success: false, message: "A data da reserva não pode ser no passado. Selecione uma data futura." };
+      }
     }
     return { success: false, message: "Não foi possível concluir a reserva." };
   }
