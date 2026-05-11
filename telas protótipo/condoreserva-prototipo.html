@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CondoReserva — Protótipo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#5416c9",
+          "primary-container": "#6c3ce1",
+          "on-primary": "#ffffff",
+          "primary-fixed": "#e8ddff",
+          "primary-fixed-dim": "#cebdff",
+          "on-primary-fixed": "#21005e",
+          "on-primary-fixed-variant": "#5110c6",
+          "secondary": "#6c38d2",
+          "secondary-container": "#8555ed",
+          "on-secondary": "#ffffff",
+          "secondary-fixed": "#e9ddff",
+          "secondary-fixed-dim": "#d1bcff",
+          "on-secondary-fixed": "#24005b",
+          "on-secondary-fixed-variant": "#5618bc",
+          "on-secondary-container": "#fffbff",
+          "tertiary": "#591ebb",
+          "tertiary-container": "#723fd4",
+          "on-tertiary": "#ffffff",
+          "tertiary-fixed": "#eaddff",
+          "tertiary-fixed-dim": "#d2bcff",
+          "on-tertiary-fixed": "#24005a",
+          "on-tertiary-fixed-variant": "#571ab8",
+          "on-tertiary-container": "#e5d6ff",
+          "surface": "#faf9f9",
+          "surface-bright": "#faf9f9",
+          "surface-dim": "#dbdad9",
+          "surface-container": "#efeded",
+          "surface-container-low": "#f5f3f3",
+          "surface-container-high": "#e9e8e8",
+          "surface-container-highest": "#e3e2e2",
+          "surface-container-lowest": "#ffffff",
+          "surface-variant": "#e3e2e2",
+          "surface-tint": "#6a39de",
+          "on-surface": "#1b1c1c",
+          "on-surface-variant": "#494455",
+          "background": "#faf9f9",
+          "on-background": "#1b1c1c",
+          "outline": "#7a7486",
+          "outline-variant": "#cbc3d7",
+          "error": "#ba1a1a",
+          "error-container": "#ffdad6",
+          "on-error": "#ffffff",
+          "on-error-container": "#93000a",
+          "inverse-surface": "#303031",
+          "inverse-on-surface": "#f2f0f0",
+          "inverse-primary": "#cebdff",
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .fill-icon { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .screen { display: none; }
+  .screen.active { display: flex; }
+  .fade-in { animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .coral-gradient { background: linear-gradient(135deg, #FF8C6B 0%, #FFB088 100%); }
+  .nav-item.active { background: #6C3CE1; color: white; }
+  .nav-item { color: #94a3b8; }
+  .nav-item:hover { color: white; background: rgba(255,255,255,0.1); }
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal-box { background:white; border-radius:1.25rem; padding:2rem; width:100%; max-width:480px; animation:fadeIn 0.2s ease; }
+  input:focus, select:focus, textarea:focus { outline: none; }
+  .badge-confirmado { background:#d1fae5; color:#065f46; }
+  .badge-pendente { background:#e8ddff; color:#5110c6; }
+  .badge-cancelado { background:#ffdad6; color:#93000a; }
+  ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-thumb { background:#cbc3d7; border-radius:4px; }
+</style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen overflow-x-hidden">
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<div id="screen-login" class="screen active min-h-screen">
+  <main class="flex min-h-screen w-full">
+    <!-- Left -->
+    <section class="w-full lg:w-1/2 bg-white flex flex-col p-8 md:p-12 lg:p-20">
+      <div class="flex items-center gap-2 mb-auto">
+        <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+          <span class="material-symbols-outlined fill-icon text-white">domain</span>
+        </div>
+        <span class="text-2xl font-black text-primary tracking-tighter">CondoReserva</span>
+      </div>
+      <div class="max-w-md w-full mx-auto my-auto">
+        <header class="mb-10">
+          <h1 class="text-on-surface text-lg font-medium">Olá,</h1>
+          <h2 class="text-4xl font-extrabold text-on-surface tracking-tight mt-1 mb-3">Bem-vindo de Volta</h2>
+          <p class="text-on-surface-variant">Acesse sua conta para gerenciar o condomínio</p>
+        </header>
+        <!-- Login hint -->
+        <div class="mb-6 p-4 bg-primary-fixed rounded-xl text-sm">
+          <p class="font-bold text-on-primary-fixed-variant mb-2">Contas de demonstração:</p>
+          <div class="space-y-1 text-on-primary-fixed-variant text-xs">
+            <p><span class="font-bold">admin@condo.com</span> / <span class="font-bold">admin123</span> → Administrador</p>
+            <p><span class="font-bold">sindico@condo.com</span> / <span class="font-bold">sindico123</span> → Síndico</p>
+            <p><span class="font-bold">morador@condo.com</span> / <span class="font-bold">morador123</span> → Morador</p>
+          </div>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg">mail</span>
+              <input id="login-email" class="w-full px-5 py-4 pl-11 bg-white border border-outline-variant/40 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-outline" placeholder="E-mail" type="email" value="admin@condo.com"/>
+            </div>
+          </div>
+          <div>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg">lock</span>
+              <input id="login-pass" class="w-full px-5 py-4 pl-11 pr-12 bg-white border border-outline-variant/40 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-outline" placeholder="Senha" type="password" value="admin123"/>
+            </div>
+          </div>
+          <div id="login-error" class="hidden text-error text-sm font-medium bg-error-container px-4 py-3 rounded-xl">E-mail ou senha incorretos.</div>
+          <button onclick="handleLogin()" class="w-full py-4 bg-primary-container text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98] transition-all">
+            Entrar
+          </button>
+        </div>
+      </div>
+      <footer class="mt-auto pt-10 text-center">
+        <p class="text-on-surface-variant text-sm">CondoReserva © 2026 — Protótipo</p>
+      </footer>
+    </section>
+    <!-- Right -->
+    <section class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#5416c9] to-[#9B6BFF] relative overflow-hidden items-center justify-center p-12">
+      <div class="absolute top-20 right-20 opacity-20 transform rotate-12">
+        <span class="material-symbols-outlined text-[120px] text-white">lock</span>
+      </div>
+      <div class="absolute bottom-20 left-10 opacity-10 transform -rotate-12">
+        <span class="material-symbols-outlined text-[100px] text-white">key</span>
+      </div>
+      <div class="absolute top-1/4 left-20 opacity-15">
+        <span class="material-symbols-outlined text-[80px] text-white">verified_user</span>
+      </div>
+      <div class="absolute top-32 left-1/4 w-32 h-12 bg-white/20 blur-xl rounded-full"></div>
+      <div class="absolute bottom-40 right-1/4 w-48 h-16 bg-white/10 blur-2xl rounded-full"></div>
+      <div class="relative z-10 w-full max-w-lg text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-lg rounded-full mb-6">
+          <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+          <span class="text-white text-xs font-bold tracking-widest uppercase">Segurança & Conforto</span>
+        </div>
+        <h3 class="text-white text-3xl font-black leading-tight">Gestão inteligente<br/>para sua moradia</h3>
+        <p class="text-white/70 mt-4 text-sm">Reservas de áreas comuns, cadastro de moradores e muito mais.</p>
+      </div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.07)_0%,transparent_100%)]"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ===================== MAIN APP SHELL ===================== -->
+<div id="screen-app" class="screen flex-col min-h-screen w-full">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[80px] z-50 bg-[#1A1A2E] flex flex-col items-center py-6 gap-4 shadow-2xl">
+    <div class="mb-4">
+      <div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center">
+        <span class="material-symbols-outlined fill-icon text-white text-lg">domain</span>
+      </div>
+    </div>
+    <nav id="sidebar-nav" class="flex flex-col gap-2 w-full px-2 flex-1">
+      <button onclick="navigate('dashboard')" data-page="dashboard" class="nav-item active flex flex-col items-center justify-center rounded-xl p-3 transition-all text-[10px] font-medium gap-1">
+        <span class="material-symbols-outlined text-lg">dashboard</span>
+        <span>Home</span>
+      </button>
+      <button onclick="navigate('reservas')" data-page="reservas" class="nav-item flex flex-col items-center justify-center rounded-xl p-3 transition-all text-[10px] font-medium gap-1">
+        <span class="material-symbols-outlined text-lg">calendar_month</span>
+        <span>Reservas</span>
+      </button>
+      <button onclick="navigate('moradores')" data-page="moradores" class="nav-item flex flex-col items-center justify-center rounded-xl p-3 transition-all text-[10px] font-medium gap-1">
+        <span class="material-symbols-outlined text-lg">group</span>
+        <span>Moradores</span>
+      </button>
+      <button onclick="navigate('areas')" data-page="areas" class="nav-item flex flex-col items-center justify-center rounded-xl p-3 transition-all text-[10px] font-medium gap-1">
+        <span class="material-symbols-outlined text-lg">domain</span>
+        <span>Áreas</span>
+      </button>
+    </nav>
+    <div class="flex flex-col gap-2 w-full px-2">
+      <button onclick="navigate('perfil')" data-page="perfil" class="nav-item flex flex-col items-center justify-center rounded-xl p-3 transition-all text-[10px] font-medium gap-1">
+        <span class="material-symbols-outlined text-lg">account_circle</span>
+        <span>Perfil</span>
+      </button>
+      <button onclick="handleLogout()" class="nav-item flex flex-col items-center justify-center rounded-xl p-3 transition-all text-[10px] font-medium gap-1 hover:text-red-400">
+        <span class="material-symbols-outlined text-lg">logout</span>
+        <span>Sair</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="fixed top-0 right-0 w-[calc(100%-80px)] h-16 bg-white/90 backdrop-blur-xl flex justify-between items-center px-8 z-40 border-b border-outline-variant/20">
+    <div class="flex items-center gap-4">
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+        <input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-sm w-72 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all" placeholder="Pesquisar..." type="text"/>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="relative p-2 text-on-surface-variant hover:text-primary hover:bg-primary-fixed rounded-full transition-all">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+      </button>
+      <div class="h-8 w-px bg-outline-variant/30"></div>
+      <div class="flex items-center gap-3">
+        <div class="text-right">
+          <p id="topbar-name" class="text-sm font-bold text-on-surface leading-tight">—</p>
+          <p id="topbar-role" class="text-xs text-on-surface-variant">—</p>
+        </div>
+        <div id="topbar-avatar" class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-sm">A</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Container -->
+  <main class="ml-[80px] pt-20 pb-12 px-8 min-h-screen bg-surface-container-low">
+    
+    <!-- ===== PAGE: DASHBOARD ===== -->
+    <div id="page-dashboard" class="page fade-in">
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h2 id="dash-title" class="text-3xl font-extrabold tracking-tight text-on-surface">Painel de Controle</h2>
+          <p class="text-on-surface-variant mt-1">Bem-vindo de volta ao CondoReserva.</p>
+        </div>
+        <div class="flex items-center gap-2 px-4 py-2 bg-primary-fixed rounded-xl">
+          <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+          <span class="text-sm font-bold text-on-primary-fixed-variant">SISTEMA ONLINE</span>
+        </div>
+      </div>
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-3 gap-6 mb-6">
+        <div class="bg-primary-container rounded-2xl p-6 text-white shadow-md relative overflow-hidden group">
+          <div class="absolute -right-4 -bottom-4 opacity-10"><span class="material-symbols-outlined text-8xl">group</span></div>
+          <p class="text-on-primary-container text-sm font-medium mb-1">Total de Moradores</p>
+          <h4 id="stat-moradores" class="text-4xl font-black">0</h4>
+          <p class="text-xs text-on-primary-container mt-4 flex items-center gap-1"><span class="material-symbols-outlined text-xs">trending_up</span>Cadastrados no sistema</p>
+        </div>
+        <div class="bg-tertiary-container rounded-2xl p-6 text-white shadow-md relative overflow-hidden group">
+          <div class="absolute -right-4 -bottom-4 opacity-10"><span class="material-symbols-outlined text-8xl">domain</span></div>
+          <p class="text-on-tertiary-container text-sm font-medium mb-1">Áreas Cadastradas</p>
+          <h4 class="text-4xl font-black">08</h4>
+          <p class="text-xs text-on-tertiary-container mt-4 flex items-center gap-1"><span class="material-symbols-outlined text-xs">info</span>Todas ativas</p>
+        </div>
+        <div class="bg-secondary-container rounded-2xl p-6 text-white shadow-md relative overflow-hidden group">
+          <div class="absolute -right-4 -bottom-4 opacity-10"><span class="material-symbols-outlined text-8xl">event_available</span></div>
+          <p class="text-on-secondary-container text-sm font-medium mb-1">Reservas no Mês</p>
+          <h4 class="text-4xl font-black">47</h4>
+          <p class="text-xs text-on-secondary-container mt-4 flex items-center gap-1"><span class="material-symbols-outlined text-xs">history</span>Recorde histórico</p>
+        </div>
+      </div>
+      <!-- Two cols -->
+      <div class="grid grid-cols-12 gap-6">
+        <!-- Reservas recentes -->
+        <div class="col-span-8 bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-bold">Reservas Recentes</h3>
+            <button onclick="navigate('reservas')" class="text-primary text-sm font-semibold hover:underline">Ver todas</button>
+          </div>
+          <table class="w-full">
+            <thead><tr class="text-left text-xs uppercase tracking-wider text-on-surface-variant border-b border-outline-variant/10">
+              <th class="pb-3 font-semibold">Morador</th>
+              <th class="pb-3 font-semibold">Área</th>
+              <th class="pb-3 font-semibold">Data</th>
+              <th class="pb-3 font-semibold">Status</th>
+            </tr></thead>
+            <tbody class="divide-y divide-outline-variant/5">
+              <tr class="hover:bg-surface-container-low/50 transition-colors">
+                <td class="py-4 flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold text-xs">RC</div><span class="text-sm font-medium">Ricardo Costa</span></td>
+                <td class="py-4 text-sm text-on-surface-variant">Salão de Festas</td>
+                <td class="py-4 text-sm text-on-surface-variant">12 Out</td>
+                <td class="py-4"><span class="px-2.5 py-1 badge-confirmado rounded-full text-xs font-bold uppercase">Confirmado</span></td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/50 transition-colors">
+                <td class="py-4 flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold text-xs">AM</div><span class="text-sm font-medium">Ana Martins</span></td>
+                <td class="py-4 text-sm text-on-surface-variant">Churrasqueira A</td>
+                <td class="py-4 text-sm text-on-surface-variant">14 Out</td>
+                <td class="py-4"><span class="px-2.5 py-1 badge-pendente rounded-full text-xs font-bold uppercase">Pendente</span></td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/50 transition-colors">
+                <td class="py-4 flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed font-bold text-xs">JP</div><span class="text-sm font-medium">João Pedro</span></td>
+                <td class="py-4 text-sm text-on-surface-variant">Quadra de Tênis</td>
+                <td class="py-4 text-sm text-on-surface-variant">15 Out</td>
+                <td class="py-4"><span class="px-2.5 py-1 badge-confirmado rounded-full text-xs font-bold uppercase">Confirmado</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Ações pendentes -->
+        <div class="col-span-4 coral-gradient rounded-2xl p-6 shadow-lg text-white flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-lg font-bold">Ações Pendentes</h3>
+              <span class="material-symbols-outlined opacity-80">bolt</span>
+            </div>
+            <ul class="space-y-3">
+              <li class="flex items-center justify-between bg-white/20 backdrop-blur-md rounded-xl p-4">
+                <span class="text-sm font-medium">Validar reservas</span>
+                <span class="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded text-[10px] font-bold uppercase">3</span>
+              </li>
+              <li class="flex items-center justify-between bg-white/20 backdrop-blur-md rounded-xl p-4">
+                <span class="text-sm font-medium">Moradores pendentes</span>
+                <span class="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded text-[10px] font-bold uppercase">2</span>
+              </li>
+              <li class="flex items-center justify-between bg-white/20 backdrop-blur-md rounded-xl p-4">
+                <span class="text-sm font-medium">Vistoria de áreas</span>
+                <span class="bg-white/30 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase">Hoje</span>
+              </li>
+            </ul>
+          </div>
+          <button class="mt-6 w-full bg-white text-[#FF8C6B] font-bold py-3 rounded-xl hover:bg-orange-50 transition-colors">
+            Resolver Pendências
+          </button>
+        </div>
+        <!-- Ocupação por área -->
+        <div class="col-span-12 bg-white rounded-2xl p-8 shadow-sm">
+          <div class="flex justify-between items-center mb-8">
+            <h3 class="text-lg font-bold">Ocupação por Área</h3>
+            <div class="flex gap-2">
+              <button class="px-4 py-1.5 bg-surface-container rounded-full text-xs font-bold text-on-surface-variant">Semanal</button>
+              <button class="px-4 py-1.5 bg-primary text-white rounded-full text-xs font-bold">Mensal</button>
+            </div>
+          </div>
+          <div class="flex items-end justify-between h-44 gap-8 px-4">
+            <div class="flex flex-col items-center flex-1 group">
+              <div class="w-full relative flex flex-col justify-end h-full">
+                <div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+                <div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[65%] relative"></div>
+              </div>
+              <p class="mt-3 text-xs font-medium text-on-surface-variant">Churrasqueira</p>
+              <p class="text-xs font-bold text-primary">65%</p>
+            </div>
+            <div class="flex flex-col items-center flex-1 group">
+              <div class="w-full relative flex flex-col justify-end h-full">
+                <div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+                <div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[92%] relative"></div>
+              </div>
+              <p class="mt-3 text-xs font-medium text-on-surface-variant">Salão de Festas</p>
+              <p class="text-xs font-bold text-primary">92%</p>
+            </div>
+            <div class="flex flex-col items-center flex-1 group">
+              <div class="w-full relative flex flex-col justify-end h-full">
+                <div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+                <div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[45%] relative"></div>
+              </div>
+              <p class="mt-3 text-xs font-medium text-on-surface-variant">Quadra</p>
+              <p class="text-xs font-bold text-primary">45%</p>
+            </div>
+            <div class="flex flex-col items-center flex-1 group">
+              <div class="w-full relative flex flex-col justify-end h-full">
+                <div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+                <div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[30%] relative"></div>
+              </div>
+              <p class="mt-3 text-xs font-medium text-on-surface-variant">Piscina</p>
+              <p class="text-xs font-bold text-primary">30%</p>
+            </div>
+            <div class="flex flex-col items-center flex-1 group">
+              <div class="w-full relative flex flex-col justify-end h-full">
+                <div class="bg-primary/10 rounded-t-xl w-full h-full absolute bottom-0"></div>
+                <div class="bg-gradient-to-t from-primary to-primary-container rounded-t-xl w-full h-[55%] relative"></div>
+              </div>
+              <p class="mt-3 text-xs font-medium text-on-surface-variant">Academia</p>
+              <p class="text-xs font-bold text-primary">55%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: MORADORES ===== -->
+    <div id="page-moradores" class="page hidden fade-in">
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h2 class="text-3xl font-extrabold tracking-tight text-on-surface">Moradores</h2>
+          <p class="text-on-surface-variant mt-1">Gerencie os moradores do condomínio.</p>
+        </div>
+        <button id="btn-novo-morador" onclick="openModal('add')" class="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary-container hover:shadow-xl transition-all active:scale-95">
+          <span class="material-symbols-outlined">person_add</span>
+          Novo Morador
+        </button>
+      </div>
+      <!-- Filters -->
+      <div class="flex gap-3 mb-6">
+        <div class="relative flex-1 max-w-xs">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+          <input id="search-moradores" oninput="renderMoradores()" class="w-full bg-white border border-outline-variant/30 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Buscar por nome ou apartamento..."/>
+        </div>
+        <select id="filter-bloco" onchange="renderMoradores()" class="bg-white border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm text-on-surface focus:ring-2 focus:ring-primary/20">
+          <option value="">Todos os blocos</option>
+          <option value="A">Bloco A</option>
+          <option value="B">Bloco B</option>
+          <option value="C">Bloco C</option>
+        </select>
+        <select id="filter-status" onchange="renderMoradores()" class="bg-white border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm text-on-surface focus:ring-2 focus:ring-primary/20">
+          <option value="">Todos os status</option>
+          <option value="ativo">Ativo</option>
+          <option value="inativo">Inativo</option>
+        </select>
+      </div>
+      <!-- Table -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="text-xs font-bold text-on-surface-variant uppercase tracking-wider bg-surface-container-low">
+              <th class="px-6 py-4">Morador</th>
+              <th class="px-6 py-4">Apartamento</th>
+              <th class="px-6 py-4">Contato</th>
+              <th class="px-6 py-4">CPF</th>
+              <th class="px-6 py-4">Status</th>
+              <th class="px-6 py-4 text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="moradores-tbody" class="divide-y divide-outline-variant/10"></tbody>
+        </table>
+        <div id="moradores-empty" class="hidden py-16 text-center text-on-surface-variant">
+          <span class="material-symbols-outlined text-5xl opacity-30 block mb-3">group_off</span>
+          <p class="font-medium">Nenhum morador encontrado.</p>
+        </div>
+        <div class="px-6 py-4 bg-surface-container-low/40 flex items-center justify-between border-t border-outline-variant/10">
+          <p id="moradores-count" class="text-xs font-medium text-on-surface-variant"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: RESERVAS ===== -->
+    <div id="page-reservas" class="page hidden fade-in">
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h2 class="text-3xl font-extrabold tracking-tight">Reservas</h2>
+          <p class="text-on-surface-variant mt-1">Acompanhe e gerencie as reservas de áreas comuns.</p>
+        </div>
+        <button class="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-primary-container transition-all active:scale-95">
+          <span class="material-symbols-outlined">add</span>
+          Nova Reserva
+        </button>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full text-left">
+          <thead><tr class="text-xs font-bold text-on-surface-variant uppercase tracking-wider bg-surface-container-low">
+            <th class="px-6 py-4">Morador</th>
+            <th class="px-6 py-4">Área</th>
+            <th class="px-6 py-4">Apartamento</th>
+            <th class="px-6 py-4">Data</th>
+            <th class="px-6 py-4">Horário</th>
+            <th class="px-6 py-4">Status</th>
+            <th class="px-6 py-4 text-right">Ações</th>
+          </tr></thead>
+          <tbody class="divide-y divide-outline-variant/10">
+            <tr class="hover:bg-surface-container-low/30 transition-colors">
+              <td class="px-6 py-5"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center font-bold text-xs text-on-secondary-fixed">RC</div><span class="text-sm font-medium">Ricardo Costa</span></div></td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">Salão de Festas</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">Apt 102 - Bloco A</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">12 Out, 2025</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">18:00–23:00</td>
+              <td class="px-6 py-5"><span class="px-3 py-1 badge-confirmado rounded-full text-xs font-bold">Confirmado</span></td>
+              <td class="px-6 py-5 text-right"><div class="flex justify-end gap-2">
+                <button class="p-2 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+                <button class="p-2 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+              </div></td>
+            </tr>
+            <tr class="hover:bg-surface-container-low/30 transition-colors">
+              <td class="px-6 py-5"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center font-bold text-xs text-on-primary-fixed">AM</div><span class="text-sm font-medium">Ana Martins</span></div></td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">Churrasqueira A</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">Apt 504 - Bloco C</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">14 Out, 2025</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">11:00–16:00</td>
+              <td class="px-6 py-5"><span class="px-3 py-1 badge-pendente rounded-full text-xs font-bold">Pendente</span></td>
+              <td class="px-6 py-5 text-right"><div class="flex justify-end gap-2">
+                <button class="p-2 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+                <button class="p-2 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+              </div></td>
+            </tr>
+            <tr class="hover:bg-surface-container-low/30 transition-colors">
+              <td class="px-6 py-5"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center font-bold text-xs text-on-tertiary-fixed">JP</div><span class="text-sm font-medium">João Pedro</span></div></td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">Quadra de Tênis</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">Apt 21 - Bloco B</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">15 Out, 2025</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">08:00–10:00</td>
+              <td class="px-6 py-5"><span class="px-3 py-1 badge-confirmado rounded-full text-xs font-bold">Confirmado</span></td>
+              <td class="px-6 py-5 text-right"><div class="flex justify-end gap-2">
+                <button class="p-2 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+                <button class="p-2 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+              </div></td>
+            </tr>
+            <tr class="hover:bg-surface-container-low/30 transition-colors">
+              <td class="px-6 py-5"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-xs text-on-surface-variant">BR</div><span class="text-sm font-medium">Beatriz Rocha</span></div></td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">Piscina</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">Apt 305 - Bloco A</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">22 Out, 2025</td>
+              <td class="px-6 py-5 text-sm text-on-surface-variant">14:00–17:00</td>
+              <td class="px-6 py-5"><span class="px-3 py-1 badge-cancelado rounded-full text-xs font-bold">Cancelado</span></td>
+              <td class="px-6 py-5 text-right"><div class="flex justify-end gap-2">
+                <button class="p-2 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+                <button class="p-2 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: AREAS ===== -->
+    <div id="page-areas" class="page hidden fade-in">
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h2 class="text-3xl font-extrabold tracking-tight">Áreas Comuns</h2>
+          <p class="text-on-surface-variant mt-1">Espaços disponíveis para reserva.</p>
+        </div>
+        <button class="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-primary-container transition-all active:scale-95">
+          <span class="material-symbols-outlined">add</span>
+          Nova Área
+        </button>
+      </div>
+      <div class="grid grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="w-14 h-14 bg-primary-fixed rounded-2xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined fill-icon text-primary text-2xl">celebration</span>
+          </div>
+          <h3 class="font-bold text-on-surface mb-1">Salão de Festas</h3>
+          <p class="text-sm text-on-surface-variant mb-4">Capacidade: 100 pessoas</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Disponível</span>
+            <span class="text-xs text-on-surface-variant font-medium">92% ocup.</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="w-14 h-14 bg-secondary-fixed rounded-2xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined fill-icon text-secondary text-2xl">outdoor_grill</span>
+          </div>
+          <h3 class="font-bold text-on-surface mb-1">Churrasqueira A</h3>
+          <p class="text-sm text-on-surface-variant mb-4">Capacidade: 20 pessoas</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 badge-pendente rounded-full text-xs font-bold">Em uso</span>
+            <span class="text-xs text-on-surface-variant font-medium">65% ocup.</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="w-14 h-14 bg-tertiary-fixed rounded-2xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined fill-icon text-tertiary text-2xl">pool</span>
+          </div>
+          <h3 class="font-bold text-on-surface mb-1">Piscina</h3>
+          <p class="text-sm text-on-surface-variant mb-4">Capacidade: 50 pessoas</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Disponível</span>
+            <span class="text-xs text-on-surface-variant font-medium">30% ocup.</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="w-14 h-14 bg-surface-container rounded-2xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined fill-icon text-on-surface-variant text-2xl">sports_tennis</span>
+          </div>
+          <h3 class="font-bold text-on-surface mb-1">Quadra de Tênis</h3>
+          <p class="text-sm text-on-surface-variant mb-4">Capacidade: 8 pessoas</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Disponível</span>
+            <span class="text-xs text-on-surface-variant font-medium">45% ocup.</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="w-14 h-14 bg-primary-fixed rounded-2xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined fill-icon text-primary text-2xl">fitness_center</span>
+          </div>
+          <h3 class="font-bold text-on-surface mb-1">Academia</h3>
+          <p class="text-sm text-on-surface-variant mb-4">Capacidade: 15 pessoas</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 badge-cancelado rounded-full text-xs font-bold">Manutenção</span>
+            <span class="text-xs text-on-surface-variant font-medium">55% ocup.</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="w-14 h-14 bg-secondary-fixed rounded-2xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined fill-icon text-secondary text-2xl">outdoor_grill</span>
+          </div>
+          <h3 class="font-bold text-on-surface mb-1">Churrasqueira B</h3>
+          <p class="text-sm text-on-surface-variant mb-4">Capacidade: 20 pessoas</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Disponível</span>
+            <span class="text-xs text-on-surface-variant font-medium">40% ocup.</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="w-14 h-14 bg-tertiary-fixed rounded-2xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined fill-icon text-tertiary text-2xl">spa</span>
+          </div>
+          <h3 class="font-bold text-on-surface mb-1">Espaço Zen</h3>
+          <p class="text-sm text-on-surface-variant mb-4">Capacidade: 10 pessoas</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Disponível</span>
+            <span class="text-xs text-on-surface-variant font-medium">20% ocup.</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="w-14 h-14 bg-surface-container rounded-2xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined fill-icon text-on-surface-variant text-2xl">deck</span>
+          </div>
+          <h3 class="font-bold text-on-surface mb-1">Solarium</h3>
+          <p class="text-sm text-on-surface-variant mb-4">Capacidade: 30 pessoas</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Disponível</span>
+            <span class="text-xs text-on-surface-variant font-medium">25% ocup.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: PERFIL ===== -->
+    <div id="page-perfil" class="page hidden fade-in">
+      <div class="mb-8">
+        <h2 class="text-3xl font-extrabold tracking-tight">Meu Perfil</h2>
+        <p class="text-on-surface-variant mt-1">Suas informações de acesso.</p>
+      </div>
+      <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-4">
+          <div class="bg-white rounded-2xl p-8 shadow-sm text-center">
+            <div id="perfil-avatar-big" class="w-24 h-24 rounded-full bg-primary-container flex items-center justify-center text-white font-black text-3xl mx-auto mb-4">A</div>
+            <h3 id="perfil-name" class="text-xl font-black text-on-surface">—</h3>
+            <p id="perfil-role" class="text-sm text-on-surface-variant mt-1">—</p>
+            <div id="perfil-badge" class="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-bold mt-4">
+              <span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+              Ativo
+            </div>
+          </div>
+        </div>
+        <div class="col-span-8">
+          <div class="bg-white rounded-2xl p-8 shadow-sm">
+            <h4 class="font-bold text-on-surface mb-6">Informações da Conta</h4>
+            <div class="space-y-5">
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Nome completo</label>
+                <p id="perfil-fullname" class="mt-1 text-sm font-medium text-on-surface">—</p>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">E-mail</label>
+                <p id="perfil-email" class="mt-1 text-sm font-medium text-on-surface">—</p>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Perfil de Acesso</label>
+                <p id="perfil-access" class="mt-1 text-sm font-medium text-on-surface">—</p>
+              </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-outline-variant/20">
+              <button onclick="handleLogout()" class="flex items-center gap-2 text-error hover:bg-error-container px-4 py-2 rounded-xl transition-all font-semibold text-sm">
+                <span class="material-symbols-outlined text-lg">logout</span>
+                Sair da conta
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===================== MODAL: MORADOR ===================== -->
+<div id="modal-morador" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-6">
+      <h3 id="modal-title" class="text-xl font-black text-on-surface">Novo Morador</h3>
+      <button onclick="closeModal()" class="p-2 hover:bg-surface-container rounded-xl transition-colors text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">Nome *</label>
+          <input id="m-nome" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Nome completo"/>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">CPF *</label>
+          <input id="m-cpf" maxlength="14" oninput="maskCpf(this)" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="000.000.000-00"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">E-mail</label>
+          <input id="m-email" type="email" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="email@exemplo.com"/>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">Telefone</label>
+          <input id="m-telefone" maxlength="15" oninput="maskPhone(this)" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="(00) 00000-0000"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">Bloco *</label>
+          <select id="m-bloco" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            <option value="">Selecione</option>
+            <option value="A">Bloco A</option>
+            <option value="B">Bloco B</option>
+            <option value="C">Bloco C</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">Apartamento *</label>
+          <input id="m-apt" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Ex: 102"/>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">Status</label>
+          <select id="m-status" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="modal-error" class="hidden mt-4 text-error text-sm font-medium bg-error-container px-4 py-3 rounded-xl">Preencha todos os campos obrigatórios.</div>
+    <div class="flex gap-3 mt-6 pt-5 border-t border-outline-variant/10">
+      <button onclick="closeModal()" class="flex-1 py-3 bg-surface-container text-on-surface font-bold rounded-xl hover:bg-surface-container-high transition-all">Cancelar</button>
+      <button onclick="saveMorador()" class="flex-1 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-container transition-all active:scale-[0.98]">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: CONFIRMAR DELETE ===================== -->
+<div id="modal-delete" class="modal-overlay" onclick="closeDeleteOnOverlay(event)">
+  <div class="modal-box max-w-sm text-center">
+    <div class="w-16 h-16 bg-error-container rounded-2xl flex items-center justify-center mx-auto mb-5">
+      <span class="material-symbols-outlined text-error text-3xl">person_remove</span>
+    </div>
+    <h3 class="text-xl font-black text-on-surface mb-2">Remover Morador</h3>
+    <p id="delete-msg" class="text-on-surface-variant text-sm mb-6">Tem certeza que deseja remover este morador? Esta ação não pode ser desfeita.</p>
+    <div class="flex gap-3">
+      <button onclick="closeDelete()" class="flex-1 py-3 bg-surface-container text-on-surface font-bold rounded-xl hover:bg-surface-container-high transition-all">Cancelar</button>
+      <button onclick="confirmDelete()" class="flex-1 py-3 bg-error text-white font-bold rounded-xl hover:opacity-90 transition-all active:scale-[0.98]">Remover</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-300 opacity-0 transition-all duration-300 pointer-events-none">
+  <div id="toast-inner" class="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl font-semibold text-sm bg-inverse-surface text-inverse-on-surface">
+    <span id="toast-icon" class="material-symbols-outlined text-lg"></span>
+    <span id="toast-msg"></span>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const USERS = [
+  { email: 'admin@condo.com', pass: 'admin123', name: 'Carlos Admin', role: 'Administrador', initials: 'CA', canManageMoradores: true },
+  { email: 'sindico@condo.com', pass: 'sindico123', name: 'Ricardo Síndico', role: 'Síndico', initials: 'RS', canManageMoradores: true },
+  { email: 'morador@condo.com', pass: 'morador123', name: 'Gabriel Morador', role: 'Morador', initials: 'GM', canManageMoradores: false },
+];
+
+let currentUser = null;
+let editingId = null;
+let deletingId = null;
+
+let moradores = [
+  { id: 1, nome: 'Ricardo Costa', cpf: '123.456.789-00', email: 'ricardo@email.com', telefone: '(85) 99999-0001', bloco: 'A', apt: '102', status: 'ativo' },
+  { id: 2, nome: 'Ana Martins', cpf: '234.567.890-11', email: 'ana@email.com', telefone: '(85) 99999-0002', bloco: 'C', apt: '504', status: 'ativo' },
+  { id: 3, nome: 'João Pedro', cpf: '345.678.901-22', email: 'joao@email.com', telefone: '(85) 99999-0003', bloco: 'B', apt: '21', status: 'ativo' },
+  { id: 4, nome: 'Beatriz Rocha', cpf: '456.789.012-33', email: 'beatriz@email.com', telefone: '(85) 99999-0004', bloco: 'A', apt: '305', status: 'ativo' },
+  { id: 5, nome: 'Marcelo Vieira', cpf: '567.890.123-44', email: 'marcelo@email.com', telefone: '(85) 99999-0005', bloco: 'B', apt: '21', status: 'ativo' },
+  { id: 6, nome: 'Fernanda Lima', cpf: '678.901.234-55', email: 'fernanda@email.com', telefone: '(85) 99999-0006', bloco: 'C', apt: '504', status: 'inativo' },
+];
+let nextId = 7;
+
+// ===== AUTH =====
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  const user = USERS.find(u => u.email === email && u.pass === pass);
+  if (!user) {
+    document.getElementById('login-error').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('login-error').classList.add('hidden');
+  currentUser = user;
+  showApp();
+}
+
+function handleLogout() {
+  currentUser = null;
+  showScreen('login');
+  navigate('dashboard');
+}
+
+function showApp() {
+  // Set topbar info
+  document.getElementById('topbar-name').textContent = currentUser.name;
+  document.getElementById('topbar-role').textContent = currentUser.role;
+  document.getElementById('topbar-avatar').textContent = currentUser.initials;
+  // Set perfil
+  document.getElementById('perfil-avatar-big').textContent = currentUser.initials;
+  document.getElementById('perfil-name').textContent = currentUser.name;
+  document.getElementById('perfil-role').textContent = currentUser.role;
+  document.getElementById('perfil-fullname').textContent = currentUser.name;
+  document.getElementById('perfil-email').textContent = currentUser.email;
+  document.getElementById('perfil-access').textContent = currentUser.role;
+  document.getElementById('dash-title').textContent = 'Painel de Controle';
+  // Morador button visibility
+  const btn = document.getElementById('btn-novo-morador');
+  if (btn) btn.style.display = currentUser.canManageMoradores ? '' : 'none';
+  // Update stat
+  updateStats();
+  showScreen('app');
+  navigate('dashboard');
+}
+
+// ===== NAVIGATION =====
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + name);
+  if (target) target.classList.add('active');
+}
+
+function navigate(page) {
+  // Update nav
+  document.querySelectorAll('#sidebar-nav button[data-page]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.page === page);
+  });
+  // Show/hide pages
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  const target = document.getElementById('page-' + page);
+  if (target) {
+    target.classList.remove('hidden');
+    target.classList.remove('fade-in');
+    void target.offsetWidth;
+    target.classList.add('fade-in');
+  }
+  if (page === 'moradores') renderMoradores();
+  if (page === 'dashboard') updateStats();
+}
+
+// ===== MORADORES CRUD =====
+function updateStats() {
+  const el = document.getElementById('stat-moradores');
+  if (el) el.textContent = moradores.filter(m => m.status === 'ativo').length;
+}
+
+function getInitials(name) {
+  return name.split(' ').slice(0, 2).map(w => w[0].toUpperCase()).join('');
+}
+
+const COLORS = ['bg-primary-fixed text-on-primary-fixed-variant', 'bg-secondary-fixed text-on-secondary-fixed-variant', 'bg-tertiary-fixed text-on-tertiary-fixed-variant', 'bg-surface-container-high text-on-surface-variant'];
+
+function renderMoradores() {
+  const search = (document.getElementById('search-moradores')?.value || '').toLowerCase();
+  const bloco = document.getElementById('filter-bloco')?.value || '';
+  const status = document.getElementById('filter-status')?.value || '';
+
+  let filtered = moradores.filter(m => {
+    const matchSearch = !search || m.nome.toLowerCase().includes(search) || m.apt.includes(search) || m.email.toLowerCase().includes(search);
+    const matchBloco = !bloco || m.bloco === bloco;
+    const matchStatus = !status || m.status === status;
+    return matchSearch && matchBloco && matchStatus;
+  });
+
+  const tbody = document.getElementById('moradores-tbody');
+  const empty = document.getElementById('moradores-empty');
+  const count = document.getElementById('moradores-count');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+  } else {
+    empty.classList.add('hidden');
+    tbody.innerHTML = filtered.map((m, i) => {
+      const color = COLORS[i % COLORS.length];
+      const statusHtml = m.status === 'ativo'
+        ? '<span class="flex items-center gap-1.5 text-emerald-600 text-xs font-bold"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>Ativo</span>'
+        : '<span class="flex items-center gap-1.5 text-on-surface-variant/50 text-xs font-bold"><span class="w-1.5 h-1.5 bg-on-surface-variant/30 rounded-full"></span>Inativo</span>';
+      const actions = currentUser?.canManageMoradores ? `
+        <div class="flex justify-end gap-2">
+          <button onclick="openModal('edit', ${m.id})" class="p-2 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+          <button onclick="openDelete(${m.id})" class="p-2 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+        </div>` : '<span class="text-on-surface-variant/40 text-xs">—</span>';
+      return `<tr class="hover:bg-surface-container-low/30 transition-colors">
+        <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full ${color} flex items-center justify-center font-bold text-xs shrink-0">${getInitials(m.nome)}</div><span class="text-sm font-semibold">${m.nome}</span></div></td>
+        <td class="px-6 py-4 text-sm text-on-surface-variant">Apt ${m.apt} - Bloco ${m.bloco}</td>
+        <td class="px-6 py-4"><div class="text-sm text-on-surface-variant">${m.email}</div><div class="text-xs text-outline mt-0.5">${m.telefone}</div></td>
+        <td class="px-6 py-4 text-sm text-on-surface-variant font-mono">${m.cpf}</td>
+        <td class="px-6 py-4">${statusHtml}</td>
+        <td class="px-6 py-4 text-right">${actions}</td>
+      </tr>`;
+    }).join('');
+  }
+  count.textContent = `Exibindo ${filtered.length} de ${moradores.length} moradores`;
+  updateStats();
+}
+
+// MODAL ADD/EDIT
+function openModal(mode, id = null) {
+  editingId = id;
+  document.getElementById('modal-error').classList.add('hidden');
+  if (mode === 'add') {
+    document.getElementById('modal-title').textContent = 'Novo Morador';
+    ['m-nome','m-cpf','m-email','m-telefone','m-apt'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('m-bloco').value = '';
+    document.getElementById('m-status').value = 'ativo';
+  } else {
+    const m = moradores.find(x => x.id === id);
+    document.getElementById('modal-title').textContent = 'Editar Morador';
+    document.getElementById('m-nome').value = m.nome;
+    document.getElementById('m-cpf').value = m.cpf;
+    document.getElementById('m-email').value = m.email;
+    document.getElementById('m-telefone').value = m.telefone;
+    document.getElementById('m-bloco').value = m.bloco;
+    document.getElementById('m-apt').value = m.apt;
+    document.getElementById('m-status').value = m.status;
+  }
+  document.getElementById('modal-morador').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-morador').classList.remove('open');
+  editingId = null;
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modal-morador')) closeModal();
+}
+
+function saveMorador() {
+  const nome = document.getElementById('m-nome').value.trim();
+  const cpf = document.getElementById('m-cpf').value.trim();
+  const email = document.getElementById('m-email').value.trim();
+  const telefone = document.getElementById('m-telefone').value.trim();
+  const bloco = document.getElementById('m-bloco').value;
+  const apt = document.getElementById('m-apt').value.trim();
+  const status = document.getElementById('m-status').value;
+  const err = document.getElementById('modal-error');
+
+  if (!nome || !cpf || !bloco || !apt) {
+    err.classList.remove('hidden');
+    return;
+  }
+  err.classList.add('hidden');
+
+  if (editingId === null) {
+    moradores.push({ id: nextId++, nome, cpf, email, telefone, bloco, apt, status });
+    showToast('success', 'Morador cadastrado com sucesso!');
+  } else {
+    const idx = moradores.findIndex(m => m.id === editingId);
+    moradores[idx] = { ...moradores[idx], nome, cpf, email, telefone, bloco, apt, status };
+    showToast('success', 'Morador atualizado com sucesso!');
+  }
+  closeModal();
+  renderMoradores();
+}
+
+// MODAL DELETE
+function openDelete(id) {
+  deletingId = id;
+  const m = moradores.find(x => x.id === id);
+  document.getElementById('delete-msg').textContent = `Tem certeza que deseja remover "${m.nome}"? Esta ação não pode ser desfeita.`;
+  document.getElementById('modal-delete').classList.add('open');
+}
+
+function closeDelete() {
+  document.getElementById('modal-delete').classList.remove('open');
+  deletingId = null;
+}
+
+function closeDeleteOnOverlay(e) {
+  if (e.target === document.getElementById('modal-delete')) closeDelete();
+}
+
+function confirmDelete() {
+  moradores = moradores.filter(m => m.id !== deletingId);
+  closeDelete();
+  renderMoradores();
+  showToast('success', 'Morador removido com sucesso.');
+}
+
+// ===== MASKS =====
+function maskCpf(input) {
+  let v = input.value.replace(/\D/g, '').slice(0, 11);
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  input.value = v;
+}
+function maskPhone(input) {
+  let v = input.value.replace(/\D/g, '').slice(0, 11);
+  v = v.replace(/^(\d{2})(\d)/, '($1) $2');
+  v = v.replace(/(\d{5})(\d)/, '$1-$2');
+  input.value = v;
+}
+
+// ===== TOAST =====
+function showToast(type, msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  const icon = type === 'success' ? 'check_circle' : 'error';
+  document.getElementById('toast-icon').textContent = icon;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  toast.style.pointerEvents = 'auto';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+    toast.style.pointerEvents = 'none';
+  }, 3000);
+}
+
+// ===== ENTER TO LOGIN =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('screen-login').classList.contains('active')) {
+    handleLogin();
+  }
+});
+</script>
+</body>
+</html>

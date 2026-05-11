@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CondoReserva - Admin Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-bright": "#faf9f9",
+                        "surface": "#faf9f9",
+                        "secondary-container": "#8555ed",
+                        "primary-container": "#6c3ce1",
+                        "surface-container-highest": "#e3e2e2",
+                        "inverse-on-surface": "#f2f0f0",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#e2d6ff",
+                        "on-surface": "#1b1c1c",
+                        "on-error": "#ffffff",
+                        "background": "#faf9f9",
+                        "secondary-fixed": "#e9ddff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#5618bc",
+                        "primary-fixed": "#e8ddff",
+                        "surface-container-low": "#f5f3f3",
+                        "on-surface-variant": "#494455",
+                        "surface-dim": "#dbdad9",
+                        "surface-container-high": "#e9e8e8",
+                        "primary-fixed-dim": "#cebdff",
+                        "on-tertiary-fixed": "#24005a",
+                        "on-tertiary-container": "#e5d6ff",
+                        "tertiary": "#591ebb",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#6c38d2",
+                        "on-tertiary-fixed-variant": "#571ab8",
+                        "tertiary-fixed": "#eaddff",
+                        "outline-variant": "#cbc3d7",
+                        "outline": "#7a7486",
+                        "tertiary-fixed-dim": "#d2bcff",
+                        "on-secondary-container": "#fffbff",
+                        "inverse-surface": "#303031",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#6a39de",
+                        "tertiary-container": "#723fd4",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e3e2e2",
+                        "primary": "#5416c9",
+                        "on-primary-fixed": "#21005e",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "surface-container": "#efeded",
+                        "on-background": "#1b1c1c",
+                        "inverse-primary": "#cebdff",
+                        "on-secondary-fixed": "#24005b",
+                        "on-primary-fixed-variant": "#5110c6",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f5f3f3; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+        .coral-gradient { background: linear-gradient(135deg, #FF8C6B 0%, #FFB088 100%); }
+        .primary-gradient { background: linear-gradient(135deg, #7B4AE2 0%, #9B6BFF 100%); }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="fixed left-0 top-0 h-full w-[80px] z-50 bg-[#1A1A2E] flex flex-col items-center py-6 gap-4 shadow-2xl shadow-purple-900/20">
+<div class="mb-6">
+<span class="text-xl font-black text-white">CR</span>
+</div>
+<!-- Home (Active) -->
+<nav class="flex flex-col gap-4 w-full px-2">
+<a class="flex flex-col items-center justify-center bg-[#6C3CE1] text-white rounded-xl p-3 transition-all duration-300 scale-95 active:scale-90 group" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Reservations</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Residents</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Common Areas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Admins</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Availability</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-4 w-full px-2">
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-white p-3 transition-colors hover:bg-white/10 rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-tight mt-1">Settings</span>
+</a>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-[#6C3CE1]">
+<img alt="Síndico Profile Picture" class="w-full h-full object-cover" data-alt="professional portrait of a middle-aged man in business casual attire with a friendly and confident expression, studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR0ZF6_tnkW_CpszkKVHK-pGP617GHIx57eSNsUF1gfSoA_h7KxlNoqFxRdZYSFjd3yV7yGUCnVCPlf8MH5FVWxd93pBN2uN40GC1UcSIKgkBYhS6gC7rVTlZg_zY4IGl5DcZ2RinG32w-a9j9vR18mtnd_VXxk0Yg8fF_clyMua3LThYSQSuv2P7kzH3kl0nnt55RJGmQL5kQHCDpDU_N5MQdvaeM-QxRVa-0RYl5jhvNah_Jt-UtD3DmNcgzYZLGhoet31mvGRs"/>
+</div>
+</div>
+</aside>
+<!-- TopNavBar (Authority: JSON) -->
+<header class="fixed top-0 right-0 w-[calc(100%-80px)] h-16 z-40 bg-transparent backdrop-blur-md flex justify-between items-center px-8">
+<div class="flex items-center gap-4">
+<h1 class="text-2xl font-black bg-gradient-to-r from-[#7B4AE2] to-[#9B6BFF] bg-clip-text text-transparent">CondoReserva</h1>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<span class="font-['Inter'] text-sm font-semibold text-on-surface-variant">Admin Console</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<input class="bg-surface-container-lowest border-none rounded-full py-2 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-outline" placeholder="Search resources..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" data-icon="search">search</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-slate-100/50 rounded-full transition-all text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</button>
+<button class="p-2 hover:bg-slate-100/50 rounded-full transition-all text-on-surface-variant relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full ring-2 ring-white"></span>
+</button>
+</div>
+<div class="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2">
+<span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                Síndico Badge
+            </div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[80px] pt-20 px-8 pb-12">
+<!-- Top Bento Grid Section -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<!-- Card 1: Painel de Controle -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h2 class="text-2xl font-bold tracking-tight mb-1">Painel de Controle</h2>
+<p class="text-on-surface-variant text-sm">Visão geral do ecossistema CondoReserva</p>
+</div>
+<div class="flex gap-2">
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-semibold">Live Feed</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-8">
+<div>
+<div class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-4">Atividade Recente</div>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+</div>
+<div>
+<p class="text-sm font-medium">Reserva Confirmada: Salão de Festas</p>
+<p class="text-[11px] text-on-surface-variant">Unidade 402 • Há 5 min</p>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="person_add">person_add</span>
+</div>
+<div>
+<p class="text-sm font-medium">Novo Morador Cadastrado</p>
+<p class="text-[11px] text-on-surface-variant">Bloco B • Há 1 hora</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="flex flex-col justify-between">
+<div>
+<div class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-2">Taxa de Ocupação</div>
+<div class="flex items-end gap-2 mb-2">
+<span class="text-4xl font-black text-primary tracking-tighter">78%</span>
+<span class="text-sm text-on-surface-variant font-medium mb-1">Capacidade Total</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/10">
+<div class="flex justify-between items-center text-sm font-medium">
+<span class="text-on-surface-variant">Reservas Ativas Hoje</span>
+<span class="text-primary font-bold">42</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Gestão Administrativa (Coral Gradient) -->
+<div class="col-span-12 lg:col-span-5 coral-gradient p-8 rounded-2xl shadow-xl shadow-orange-200/40 text-white relative overflow-hidden">
+<div class="relative z-10 h-full flex flex-col">
+<div class="flex justify-between items-start mb-6">
+<h2 class="text-xl font-bold tracking-tight">Gestão Administrativa</h2>
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+</div>
+<div class="grid grid-cols-2 gap-4 flex-grow">
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-4 flex flex-col justify-center">
+<p class="text-xs font-medium text-white/80">Admins Ativos</p>
+<p class="text-2xl font-black">03</p>
+</div>
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-4 flex flex-col justify-center border border-white/20">
+<p class="text-xs font-medium text-white/80">Pendências</p>
+<p class="text-2xl font-black">12</p>
+</div>
+<div class="col-span-2 bg-white/20 backdrop-blur-md rounded-xl p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-white/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="notification_important">notification_important</span>
+</div>
+<div>
+<p class="text-sm font-bold">Alertas Críticos</p>
+<p class="text-xs text-white/80">02 sistemas necessitam revisão</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-lg" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Decorative background elements -->
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute -left-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+</div>
+</div>
+<!-- Middle Section -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<!-- Card 3: Indicadores Gerais -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant px-1">Indicadores Gerais</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-center h-32">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="groups">groups</span>
+<p class="text-2xl font-black tracking-tight">124</p>
+<p class="text-[11px] font-bold text-on-surface-variant uppercase">Moradores Ativos</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-center h-32">
+<span class="material-symbols-outlined text-secondary mb-2" data-icon="shield_person">shield_person</span>
+<p class="text-2xl font-black tracking-tight">03</p>
+<p class="text-[11px] font-bold text-on-surface-variant uppercase">Administradores</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-center h-32">
+<span class="material-symbols-outlined text-[#FF8C6B] mb-2" data-icon="apartment">apartment</span>
+<p class="text-2xl font-black tracking-tight">08</p>
+<p class="text-[11px] font-bold text-on-surface-variant uppercase">Áreas Comuns</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-center h-32">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="analytics">analytics</span>
+<p class="text-2xl font-black tracking-tight">72%</p>
+<p class="text-[11px] font-bold text-on-surface-variant uppercase">Taxa Ocupação</p>
+</div>
+</div>
+</div>
+<!-- Card 4: Análise de Reservas (Graph Placeholder) -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-center mb-10">
+<div>
+<h2 class="text-xl font-bold tracking-tight">Análise de Reservas</h2>
+<p class="text-on-surface-variant text-xs font-medium">Evolução mensal por categoria de área</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="text-[11px] font-bold text-on-surface-variant">Social</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="text-[11px] font-bold text-on-surface-variant">Lazer</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-[#FFB088]"></span>
+<span class="text-[11px] font-bold text-on-surface-variant">Esporte</span>
+</div>
+</div>
+</div>
+<div class="relative h-48 flex items-end gap-6 w-full pb-8 border-b border-outline-variant/20">
+<!-- Fake Bars -->
+<div class="flex-1 flex flex-col gap-1 items-center group cursor-pointer">
+<div class="w-full flex flex-col-reverse items-center h-40 gap-0.5">
+<div class="w-full bg-[#FFB088] rounded-t-sm" style="height: 20%"></div>
+<div class="w-full bg-secondary" style="height: 30%"></div>
+<div class="w-full bg-primary" style="height: 40%"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant mt-2">JAN</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 items-center group cursor-pointer">
+<div class="w-full flex flex-col-reverse items-center h-40 gap-0.5">
+<div class="w-full bg-[#FFB088] rounded-t-sm" style="height: 15%"></div>
+<div class="w-full bg-secondary" style="height: 45%"></div>
+<div class="w-full bg-primary" style="height: 35%"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant mt-2">FEV</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 items-center group cursor-pointer">
+<div class="w-full flex flex-col-reverse items-center h-40 gap-0.5">
+<div class="w-full bg-[#FFB088] rounded-t-sm" style="height: 25%"></div>
+<div class="w-full bg-secondary" style="height: 20%"></div>
+<div class="w-full bg-primary" style="height: 50%"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant mt-2">MAR</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 items-center group cursor-pointer">
+<div class="w-full flex flex-col-reverse items-center h-40 gap-0.5">
+<div class="w-full bg-[#FFB088] rounded-t-sm" style="height: 10%"></div>
+<div class="w-full bg-secondary" style="height: 35%"></div>
+<div class="w-full bg-primary" style="height: 45%"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant mt-2">ABR</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 items-center group cursor-pointer">
+<div class="w-full flex flex-col-reverse items-center h-40 gap-0.5">
+<div class="w-full bg-[#FFB088] rounded-t-sm" style="height: 30%"></div>
+<div class="w-full bg-secondary" style="height: 25%"></div>
+<div class="w-full bg-primary" style="height: 30%"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant mt-2">MAI</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 items-center group cursor-pointer">
+<div class="w-full flex flex-col-reverse items-center h-40 gap-0.5">
+<div class="w-full bg-[#FFB088] rounded-t-sm" style="height: 20%"></div>
+<div class="w-full bg-secondary" style="height: 40%"></div>
+<div class="w-full bg-primary" style="height: 35%"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant mt-2">JUN</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Table Section -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
+<div class="px-8 py-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-low/30">
+<h2 class="text-xl font-bold tracking-tight">Administradores Cadastrados</h2>
+<button class="bg-primary text-white px-5 py-2 rounded-full text-xs font-bold hover:shadow-lg hover:shadow-primary/20 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-base" data-icon="add">add</span>
+                    Novo Administrador
+                </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="text-on-surface-variant text-[11px] font-bold uppercase tracking-widest bg-surface-container-low/50">
+<th class="px-8 py-4">Nome</th>
+<th class="px-8 py-4">E-mail</th>
+<th class="px-8 py-4">Permissões</th>
+<th class="px-8 py-4">Status</th>
+<th class="px-8 py-4 text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low/20 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">RS</div>
+<span class="text-sm font-semibold">Ricardo Silva</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">ricardo.silva@condoreserva.com</td>
+<td class="px-8 py-5">
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-2.5 py-1 rounded-md text-[10px] font-bold uppercase">Master</span>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-1.5 text-emerald-600 font-bold text-xs">
+<span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                    Ativo
+                                </div>
+</td>
+<td class="px-8 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded-lg transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</button>
+<button class="p-2 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-lg transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/20 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xs">AM</div>
+<span class="text-sm font-semibold">Ana Martins</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">ana.martins@condoreserva.com</td>
+<td class="px-8 py-5">
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-2.5 py-1 rounded-md text-[10px] font-bold uppercase">Gerente</span>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-1.5 text-emerald-600 font-bold text-xs">
+<span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                    Ativo
+                                </div>
+</td>
+<td class="px-8 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded-lg transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</button>
+<button class="p-2 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-lg transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/20 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-outline-variant/30 text-outline flex items-center justify-center font-bold text-xs">FC</div>
+<span class="text-sm font-semibold">Fabio Costa</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">fabio.costa@condoreserva.com</td>
+<td class="px-8 py-5">
+<span class="bg-surface-container text-on-surface-variant px-2.5 py-1 rounded-md text-[10px] font-bold uppercase">Moderador</span>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-1.5 text-on-surface-variant/40 font-bold text-xs">
+<span class="w-1.5 h-1.5 bg-on-surface-variant/40 rounded-full"></span>
+                                    Inativo
+                                </div>
+</td>
+<td class="px-8 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded-lg transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</button>
+<button class="p-2 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-lg transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-4 bg-surface-container-low/10 flex items-center justify-between">
+<p class="text-[11px] font-medium text-on-surface-variant">Exibindo 3 de 3 administradores</p>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

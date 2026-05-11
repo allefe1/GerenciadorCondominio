@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CondoReserva - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#d1bcff",
+              "outline-variant": "#cbc3d7",
+              "on-tertiary-fixed-variant": "#571ab8",
+              "surface-variant": "#e3e2e2",
+              "primary-container": "#6c3ce1",
+              "on-surface-variant": "#494455",
+              "error-container": "#ffdad6",
+              "surface-container-low": "#f5f3f3",
+              "tertiary": "#591ebb",
+              "tertiary-fixed-dim": "#d2bcff",
+              "on-tertiary-fixed": "#24005a",
+              "on-secondary-fixed-variant": "#5618bc",
+              "secondary-container": "#8555ed",
+              "on-primary": "#ffffff",
+              "surface-container": "#efeded",
+              "on-error-container": "#93000a",
+              "background": "#faf9f9",
+              "error": "#ba1a1a",
+              "outline": "#7a7486",
+              "surface-container-highest": "#e3e2e2",
+              "surface-container-lowest": "#ffffff",
+              "primary-fixed-dim": "#cebdff",
+              "on-primary-container": "#e2d6ff",
+              "on-secondary-container": "#fffbff",
+              "primary": "#5416c9",
+              "on-surface": "#1b1c1c",
+              "surface-dim": "#dbdad9",
+              "on-background": "#1b1c1c",
+              "on-primary-fixed": "#21005e",
+              "surface": "#faf9f9",
+              "secondary": "#6c38d2",
+              "surface-bright": "#faf9f9",
+              "surface-tint": "#6a39de",
+              "secondary-fixed": "#e9ddff",
+              "on-tertiary": "#ffffff",
+              "primary-fixed": "#e8ddff",
+              "surface-container-high": "#e9e8e8",
+              "on-secondary-fixed": "#24005b",
+              "inverse-on-surface": "#f2f0f0",
+              "on-secondary": "#ffffff",
+              "tertiary-fixed": "#eaddff",
+              "inverse-primary": "#cebdff",
+              "tertiary-container": "#723fd4",
+              "inverse-surface": "#303031",
+              "on-error": "#ffffff",
+              "on-primary-fixed-variant": "#5110c6",
+              "on-tertiary-container": "#e5d6ff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden">
+<main class="flex min-h-screen">
+<!-- Left Side: Login Form -->
+<section class="w-full lg:w-1/2 bg-surface-container-lowest flex flex-col p-8 md:p-12 lg:p-20 relative">
+<!-- Header/Logo -->
+<div class="flex items-center gap-2 mb-auto">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">domain</span>
+</div>
+<span class="text-2xl font-black text-primary tracking-tighter">CondoReserva</span>
+</div>
+<!-- Form Container -->
+<div class="max-w-md w-full mx-auto my-auto">
+<header class="mb-10">
+<h1 class="text-on-surface text-lg font-medium leading-none">Olá,</h1>
+<h2 class="text-4xl md:text-[40px] font-extrabold text-on-surface tracking-tight mt-1 mb-3">Bem-vindo de Volta</h2>
+<p class="text-on-surface-variant body-md">Acesse sua conta para gerenciar suas reservas</p>
+</header>
+<form class="space-y-6">
+<!-- Email Input -->
+<div class="space-y-2">
+<label class="sr-only" for="email">E-mail ou nome de usuário</label>
+<div class="relative group">
+<input class="w-full px-5 py-4 bg-surface-container-lowest border border-outline-variant/30 rounded-[10px] focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none transition-all placeholder:text-outline" id="email" placeholder="E-mail ou nome de usuário" type="text"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<label class="sr-only" for="password">Senha</label>
+<div class="relative group">
+<input class="w-full px-5 py-4 bg-surface-container-lowest border border-outline-variant/30 rounded-[10px] focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none transition-all placeholder:text-outline" id="password" placeholder="Senha" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Actions Row -->
+<div class="flex items-center justify-between text-sm">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20 transition-all cursor-pointer" type="checkbox"/>
+<span class="text-on-surface-variant group-hover:text-on-surface transition-colors">Lembrar-me</span>
+</label>
+<a class="text-primary font-semibold hover:underline underline-offset-4" href="#">Esqueceu sua senha?</a>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-4 bg-primary-container text-white font-bold rounded-[12px] shadow-lg shadow-primary/20 hover:bg-primary hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98] transition-all" type="submit">
+                        Entrar
+                    </button>
+</form>
+</div>
+<!-- Footer -->
+<footer class="mt-auto pt-10 text-center">
+<p class="text-on-surface-variant text-sm">
+                    Não possui uma conta? 
+                    <a class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#">Cadastre-se</a>
+</p>
+</footer>
+</section>
+<!-- Right Side: Visual & Identity -->
+<section class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#7B4AE2] to-[#9B6BFF] relative overflow-hidden items-center justify-center p-12">
+<!-- Abstract Security Decorations (Floats) -->
+<div class="absolute top-20 right-20 opacity-20 transform rotate-12">
+<span class="material-symbols-outlined text-[120px] text-white">lock</span>
+</div>
+<div class="absolute bottom-20 left-10 opacity-10 transform -rotate-12">
+<span class="material-symbols-outlined text-[100px] text-white">key</span>
+</div>
+<div class="absolute top-1/4 left-20 opacity-15">
+<span class="material-symbols-outlined text-[80px] text-white">verified_user</span>
+</div>
+<!-- Cloud Decorations -->
+<div class="absolute top-32 left-1/4 w-32 h-12 bg-white/20 blur-xl rounded-full"></div>
+<div class="absolute bottom-40 right-1/4 w-48 h-16 bg-white/10 blur-2xl rounded-full"></div>
+<div class="absolute top-1/2 right-10 w-24 h-10 bg-white/15 blur-lg rounded-full"></div>
+<!-- Content Card -->
+<div class="relative z-10 w-full max-w-lg">
+<div class="bg-white/10 backdrop-blur-md rounded-3xl p-2 border border-white/20 shadow-2xl overflow-hidden max-h-[600px] flex items-center justify-center">
+<img alt="Digital security and biometric authentication illustration" class="w-full h-full object-cover rounded-[1.25rem]" data-alt="Modern high-end luxury apartment complex facade with clean architectural lines, lush landscaping, and soft warm dusk lighting atmosphere" src="https://lh3.googleusercontent.com/aida/ADBb0ujgka-Sb5k79VYQkQM6PN5f-jKuX8UGXn8PLbGztmDUcN1J8C2jWTqtDl7OApIPjQ5QoItzaUL39mtYljHguqorRr2nzfBMxve2jaQTY_GcvYyOV91FGwcNkCOtO6UUaz_0UtZtmuzXTBReG1tVO_IRCMZjDh_yy6dGmWSmA_qGHWFfHf28RZLCTQ0FO6QvFWpP4yAl5Fj-0JQRU1keJWqJXedFu66PEQvWcTyYkgglG2hWygxBqG8etXLIYFOjJ7hUcpXbz_z6_A"/>
+</div>
+<div class="mt-8 text-center">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-lg rounded-full mb-4">
+<span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+<span class="text-white text-xs font-bold tracking-widest uppercase">Segurança &amp; Conforto</span>
+</div>
+<h3 class="text-white text-2xl font-bold">Gestão inteligente para sua moradia</h3>
+</div>
+</div>
+<!-- Decorative Mesh Gradient Overlay -->
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_0%,transparent_100%)]"></div>
+</section>
+</main>
+</body></html>
