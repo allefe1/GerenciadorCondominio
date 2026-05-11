@@ -7,6 +7,7 @@ import { UserForm } from "@/components/users/user-form";
 import type { CurrentUser } from "@/lib/auth/current-user";
 import { isInvalidReservaStatusValue } from "@/lib/db-compat";
 import { db } from "@/lib/db";
+import { censurarTelefone } from "@/lib/utils";
 
 type UserManagementPageProps = {
   currentUser: CurrentUser;
@@ -108,7 +109,7 @@ export async function UserManagementPage({
                       <p className="font-semibold text-on-surface">{user.nomeCompleto}</p>
                       <p className="text-sm text-on-surface-variant">{user.email}</p>
                       {user.telefone && (
-                         <p className="mt-1 text-sm text-on-surface-variant">{user.telefone}</p>
+                         <p className="mt-1 text-sm text-on-surface-variant">{censurarTelefone(user.telefone)}</p>
                       )}
                       {user.tipoUsuario === "MORADOR" ? (
                         <p className="mt-1 text-xs text-on-surface-variant">

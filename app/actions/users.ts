@@ -62,6 +62,42 @@ function getUserFormFields(formData: FormData) {
   return fields;
 }
 
+function capitalizeWord(value: string) {
+  const normalized = value.trim().toLowerCase();
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
+function getPrimeiroNome(nomeCompleto: string) {
+  return capitalizeWord(nomeCompleto.trim().split(/\s+/)[0] || "Usuario");
+}
+
+function getUltimosDigitosTelefone(telefone?: string) {
+  const apenasNumeros = telefone?.replace(/\D/g, "") || "";
+  return apenasNumeros.length >= 4 ? apenasNumeros.slice(-4) : "0000";
+}
+
+function getAndarApartamento(apartamento?: string) {
+  const apenasNumeros = apartamento?.replace(/\D/g, "") || "";
+
+  if (apenasNumeros.length <= 2) {
+    return apenasNumeros || "1";
+  }
+
+  return apenasNumeros.slice(0, -2);
+}
+
+function gerarSenhaPadraoPrimeiroAcesso(data: {
+  nomeCompleto: string;
+  telefone?: string;
+  apartamento?: string;
+}) {
+  const ultimosDigitosTelefone = getUltimosDigitosTelefone(data.telefone);
+  const primeiroNome = getPrimeiroNome(data.nomeCompleto);
+  const andar = getAndarApartamento(data.apartamento);
+
+  return `${ultimosDigitosTelefone}${primeiroNome}@AP${andar}`;
+}
+
 export async function updateMyProfileAction(_: unknown, formData: FormData) {
   const user = await requireAuthenticatedUser();
   const parsed = profileSchema.safeParse({
@@ -193,21 +229,7 @@ export async function upsertUserAction(_: unknown, formData: FormData) {
     return { success: false, message: getPasswordPolicyMessage(), fields };
   }
 
-  // Gera a senha padrão: Primeira palavra do nome (Capitalizada) + @123
-  // Valida a senha apenas se o admin decidir digitar uma senha manualmente
-  // Pega o tipo de usuário e capitaliza (Ex: MORADOR vira Morador, SINDICO vira Sindico)
-  const prefixo = data.tipoUsuario.charAt(0).toUpperCase() + data.tipoUsuario.slice(1).toLowerCase();
-  
-  // Tenta pegar os 3 últimos dígitos do telefone. Se não tiver, usa "123" como plano B.
-  let sufixo = "123";
-  if (data.telefone) {
-    const apenasNumeros = data.telefone.replace(/\D/g, ""); // Tira os parênteses e traços da máscara
-    if (apenasNumeros.length >= 3) {
-      sufixo = apenasNumeros.slice(-3);
-    }
-  }
-  
-  const senhaPadrao = `${prefixo}@${sufixo}`; // Ex: Morador@003, Administrador@123
+  const senhaPadrao = gerarSenhaPadraoPrimeiroAcesso(data);
 
   const commonData = {
     tipoUsuario: data.tipoUsuario,
