@@ -48,7 +48,7 @@ export function LoginPortalPage({ portal }: LoginPortalPageProps) {
             </div>
           </div>
 
-          <LoginForm portal={portal} />
+          <LoginForm />
 
           <div className="mt-6 text-sm text-on-surface-variant">
             <Link href={content.alternateHref} className="font-semibold text-primary hover:underline">

@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import type { CurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/db";
 import { formatDateBR, formatTimeBR } from "@/lib/reservas";
+import { Download } from "lucide-react";
 
 type ReservationManagementPageProps = {
   currentUser: CurrentUser;
@@ -61,6 +62,14 @@ export async function ReservationManagementPage({
             </p>
             <h2 className="mt-2 text-2xl font-black">Todas as reservas</h2>
           </div>
+          <a
+            href="/api/reservas/export"
+            title="Exportar reservas em CSV"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-outline-variant/40 px-3 py-2 text-sm font-semibold text-on-surface transition hover:border-primary hover:text-primary"
+          >
+            <Download aria-hidden="true" size={16} />
+            Exportar CSV
+          </a>
         </div>
 
         <div className="overflow-x-auto">

@@ -9,7 +9,6 @@ import crypto from "node:crypto";
 import { db } from "@/lib/db";
 import { dashboardRoutes } from "@/lib/navigation";
 import { loginSchema } from "@/lib/auth/login-schema";
-import { loginPortalRoutes } from "@/lib/auth/portal";
 import { getPasswordPolicyMessage, isStrongPassword } from "@/lib/auth/password";
 import { signSession } from "@/lib/auth/session";
 import { sendResetPasswordMail } from "@/lib/mail";
@@ -40,7 +39,6 @@ export async function loginAction(_: unknown, formData: FormData) {
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
-    portal: formData.get("portal"),
   });
 
   if (!parsed.success) {
@@ -49,7 +47,6 @@ export async function loginAction(_: unknown, formData: FormData) {
 
   const email = parsed.data.email.toLowerCase().trim();
   const password = parsed.data.password;
-  const portal = parsed.data.portal;
   try {
     const user = await db.usuario.findUnique({ where: { email } });
 
@@ -69,14 +66,6 @@ export async function loginAction(_: unknown, formData: FormData) {
       return {
         success: false,
         message: "Usuário inativo. Entre em contato com a administração do condomínio.",
-      };
-    }
-
-    if (user.tipoUsuario !== portal) {
-      return {
-        success: false,
-        message:
-          "Este usuario nao pode autenticar neste portal. Use a rota de login correspondente ao seu perfil.",
       };
     }
 
@@ -102,7 +91,7 @@ export async function loginAction(_: unknown, formData: FormData) {
           acao: "LOGIN_FALHA",
           entidade: "USUARIO",
           idEntidade: user.id,
-          detalhes: { email, tentativas: nextAttempts, portal },
+          detalhes: { email, tentativas: nextAttempts },
           ipAddress: getClientIp((await headers()).get("x-forwarded-for")),
         },
       });
@@ -129,7 +118,7 @@ export async function loginAction(_: unknown, formData: FormData) {
         acao: "LOGIN",
         entidade: "USUARIO",
         idEntidade: user.id,
-        detalhes: { email, portal },
+      detalhes: { email },
         ipAddress: getClientIp((await headers()).get("x-forwarded-for")),
       },
     });

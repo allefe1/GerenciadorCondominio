@@ -1,224 +1,218 @@
 # Gerenciador de Condomínio
 
-Aplicação web para autenticação, gestão de usuários e reservas de áreas comuns, construída a partir da modelagem PostgreSQL, dos protótipos HTML e do design system do projeto original.
+Aplicação web para gestão de usuários, áreas comuns e reservas de condomínio. O projeto usa Next.js, Prisma e Supabase PostgreSQL.
+
+## Funcionalidades
+
+- Login único em /login, com identificação automática do perfil e redirecionamento para o painel correspondente.
+- Perfis de MORADOR, ADMINISTRADOR e SINDICO.
+- Bloqueio de conta após três tentativas de login inválidas, por quinze minutos.
+- Primeiro acesso obrigatório com definição de senha forte.
+- Recuperação e redefinição de senha por token.
+- Gestão de usuários, áreas comuns e perfil do usuário.
+- Solicitação, confirmação, cancelamento e histórico de reservas.
+- Exportação de reservas em CSV para administradores e síndicos.
+- Auditoria das principais operações no banco.
 
 ## Stack
 
 - Next.js 15
-- TypeScript
+- React 19 e TypeScript
 - Tailwind CSS
-- Prisma
-- Supabase (PostgreSQL gerenciado)
-
-## Status funcional
-
-O projeto já entrega:
-
-- login por portal:
-  - `/login/morador`
-  - `/login/admin`
-  - `/login/sindico`
-- logout
-- bloqueio após 3 tentativas falhas por 15 minutos
-- recuperação de senha por token
-- perfis `MORADOR`, `ADMINISTRADOR` e `SINDICO`
-- gestão de usuários
-- meu perfil e troca de senha
-- solicitação, confirmação automática e cancelamento de reservas
-- acompanhamento de histórico e utilização pelos administradores
+- Prisma 6
+- Supabase PostgreSQL
 
 ## Pré-requisitos
 
-Para rodar no Windows com PowerShell:
+- Node.js 20 ou superior.
+- npm.
+- Projeto Supabase ativo, com acesso ao banco PostgreSQL.
 
-- Node.js 20+ com `npm`
-- Projeto Supabase com banco ativo
+## Instalação
 
-## Setup recomendado (Supabase + PowerShell)
+~~~bash
+git clone <URL_DO_REPOSITORIO>
+cd GerenciadorCondominio
+npm install
+cp .env.example .env
+~~~
 
-### 1. Entrar no projeto
+No Windows PowerShell:
 
-```powershell
-cd "C:\Users\filipez\Documents\GerenciadorCondominio"
-```
+~~~powershell
+Copy-Item .env.example .env
+npm.cmd install
+~~~
 
-### 2. Criar `.env`
+## Variáveis de ambiente
 
-```powershell
-Copy-Item .env.example .env -Force
-notepad .env
-```
+Edite o arquivo .env criado a partir de .env.example.
 
-Use pelo menos estes valores:
-
-```env
-DATABASE_URL="postgresql://postgres.<PROJECT_REF>:<DB_PASSWORD>@aws-1-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require"
-AUTH_SECRET="123456"
+~~~env
+DATABASE_URL="postgresql://postgres.<PROJECT_REF>:<DB_PASSWORD>@<POOLER_HOST>:6543/postgres?sslmode=require&pgbouncer=true"
+AUTH_SECRET="<CHAVE_ALEATORIA_FORTE>"
 APP_URL="http://localhost:3000"
 SMTP_HOST=""
 SMTP_PORT=""
 SMTP_USER=""
 SMTP_PASS=""
 SMTP_FROM="nao-responda@condoreserva.com"
-```
+~~~
 
-### 3. Instalar dependências
+### Supabase
 
-Se o PowerShell bloquear `npm`, use `npm.cmd`:
+Copie a URI em **Supabase > Connect > Transaction pooler**. A senha deve ser a senha do banco, não uma API key. A URL deve manter:
 
-```powershell
-npm.cmd install
-```
+- porta 6543;
+- sslmode=require;
+- pgbouncer=true;
+- usuário no formato postgres.<PROJECT_REF>.
 
-### 4. Regenerar Prisma Client
+Gere uma chave para AUTH_SECRET:
 
-```powershell
-npm.cmd run db:generate
-```
+~~~bash
+openssl rand -hex 32
+~~~
 
-### 5. Rodar a aplicação
+Não versione .env, chaves, senhas ou a URI real do banco.
 
-```powershell
-npm.cmd run dev
-```
+## Banco de dados
 
-Abra:
+Gere o Prisma Client:
 
-- `http://localhost:3000/login`
-- `http://localhost:3000/login/morador`
-- `http://localhost:3000/login/admin`
-- `http://localhost:3000/login/sindico`
+~~~bash
+npm run db:generate
+~~~
 
-## Credenciais iniciais
+Para inicializar um banco vazio com schema, seeds e migrations:
 
-- Morador
-  - `morador@condo.com`
-  - `Morador@123`
-- Administrador
-  - `admin@condo.com`
-  - `Admin@123`
-- Síndico
-  - `sindico@condoreserva.com`
-  - `Sindico@123`
+~~~bash
+npm run db:bootstrap
+~~~
 
-## Fluxo de teste recomendado
+Para aplicar apenas a migration de reservas e notificações:
 
-### Autenticação
+~~~bash
+npm run db:migrate:003
+~~~
 
-1. Acesse `/login/morador` e entre com o morador.
-2. Acesse `/login/admin` e entre com o administrador.
-3. Acesse `/login/sindico` e entre com o síndico.
-4. Tente usar um perfil no portal errado para validar o bloqueio de acesso.
-5. Tente errar a senha 3 vezes para validar o bloqueio temporário.
+> db:bootstrap é destinado a banco vazio ou reinicialização explícita. Não o execute em um banco com dados que precisam ser preservados.
 
-### Usuários
+## Execução
 
-1. Entre como admin ou síndico.
-2. Acesse `/admin/usuarios` ou `/sindico/usuarios`.
-3. Cadastre um novo morador.
-4. Edite o usuário criado.
-5. Ative ou inative um usuário.
-6. Acesse `/perfil` e altere seus próprios dados.
+Ambiente de desenvolvimento:
 
-### Reservas
+~~~bash
+npm run dev
+~~~
 
-1. Entre como morador.
-2. Acesse `/morador/reservas`.
-3. Agende uma reserva futura (que será confirmada automaticamente).
-4. Entre como admin ou síndico.
-5. Acesse `/admin/reservas` ou `/sindico/reservas`.
-6. Acompanhe a reserva na agenda e o histórico de utilização.
-7. Volte ao morador e teste o cancelamento da reserva.
+Abra http://localhost:3000/login. Se a porta estiver ocupada, o Next.js usa a próxima porta disponível e informa o endereço no terminal.
+
+Build de produção:
+
+~~~bash
+npm run runbuild
+npm run start
+~~~
+
+O comando runbuild gera o Prisma Client antes de executar o build:
+
+~~~text
+npm run db:generate && next build
+~~~
+
+## Login e perfis
+
+Use apenas a tela /login. Após validar e-mail e senha, o sistema identifica o tipo de usuário e redireciona automaticamente:
+
+| Perfil | Painel |
+| --- | --- |
+| Morador | /morador |
+| Administrador | /admin |
+| Síndico | /sindico |
+
+As rotas legadas /login/morador, /login/admin e /login/sindico redirecionam para /login.
+
+Em instalações criadas pelas seeds originais, as credenciais de demonstração documentadas são:
+
+| Perfil | E-mail | Senha |
+| --- | --- | --- |
+| Morador | morador@condo.com | Morador@123 |
+| Administrador | admin@condo.com | Admin@123 |
+| Síndico | sindico@condoreserva.com | Sindico@123 |
+
+Troque essas senhas antes de qualquer publicação. Contas demo.reserva.*@condoreserva.local são geradas para dados de demonstração e não possuem senha compartilhada.
+
+## Reservas de demonstração
+
+Para gerar dados de teste:
+
+~~~bash
+npm run db:seed-reservas
+~~~
+
+O comando cria cinco reservas confirmadas por dia nos próximos quinze dias, totalizando 75 reservas. Ele evita conflito de horários, respeita o limite mensal configurado e cria moradores de demonstração somente quando necessário para manter a regra de negócio.
+
+O script é idempotente para as reservas de demonstração: execuções seguintes não duplicam os mesmos horários.
+
+Para criar cinco reservas de demonstração para o dia atual, das 14h às 19h:
+
+~~~bash
+npm run db:seed-reservas-hoje
+~~~
+
+## Exportação de reservas
+
+Administradores e síndicos podem abrir /admin/reservas ou /sindico/reservas e usar **Exportar CSV**.
+
+A exportação:
+
+- exige sessão de administrador ou síndico;
+- não permite conta em primeiro acesso;
+- produz arquivo CSV sem cache;
+- neutraliza valores que poderiam ser interpretados como fórmulas por planilhas;
+- registra a operação em log_atividade.
 
 ## Rotas principais
 
-### Autenticação
-
-- `/login`
-- `/login/morador`
-- `/login/admin`
-- `/login/sindico`
-- `/recuperar-senha`
-- `/recuperar-senha/[token]`
-
-### Morador
-
-- `/morador`
-- `/morador/reservas`
-- `/perfil`
-
-### Administrador
-
-- `/admin`
-- `/admin/usuarios`
-- `/admin/reservas`
-
-### Síndico
-
-- `/sindico`
-- `/sindico/usuarios`
-- `/sindico/reservas`
+| Área | Rotas |
+| --- | --- |
+| Autenticação | /login, /primeiro-acesso, /recuperar-senha |
+| Morador | /morador, /morador/reservas, /perfil |
+| Administrador | /admin, /admin/usuarios, /admin/areas, /admin/reservas |
+| Síndico | /sindico, /sindico/usuarios, /sindico/areas, /sindico/reservas |
+| API | /api/reservas/export |
 
 ## Comandos úteis
 
-```powershell
-npm.cmd run dev
-npm.cmd run build
-npm.cmd run db:generate
-npm.cmd run db:migrate:003
-```
+| Comando | Finalidade |
+| --- | --- |
+| npm run dev | Inicia o ambiente de desenvolvimento. |
+| npm run runbuild | Gera o Prisma Client e compila o projeto. |
+| npm run start | Inicia o build de produção. |
+| npm run db:generate | Gera o Prisma Client. |
+| npm run db:bootstrap | Inicializa schema, seeds e migrations em banco vazio. |
+| npm run db:migrate:003 | Aplica a migration de reservas e notificações. |
+| npm run db:seed-reservas | Gera 75 reservas de demonstração. |
+| npm run db:seed-reservas-hoje | Gera cinco reservas de demonstração para o dia atual, a partir das 14h. |
 
-## Troubleshooting
+## Segurança
 
-### 1. `npm : ... execução de scripts foi desabilitada`
+- Sessão assinada com JWT e cookie httpOnly.
+- AUTH_SECRET obrigatória e aleatória.
+- Senhas armazenadas com bcrypt.
+- Validação de formulários com Zod.
+- Redirecionamentos internos validados.
+- Cabeçalhos de segurança para MIME sniffing, framing, referrer e permissões do navegador.
+- Dependências atualizadas e auditadas com npm audit.
 
-Use:
+## Verificação antes do push
 
-```powershell
-npm.cmd install
-npm.cmd run dev
-```
+~~~bash
+npm install
+npm run runbuild
+npm audit --omit=dev
+git status
+~~~
 
-### 2. `DATABASE_URL não definida`
-
-Crie o `.env` corretamente:
-
-```powershell
-Copy-Item .env.example .env -Force
-notepad .env
-```
-
-### 3. Erro de conexão SSL/host no Supabase
-
-Confira se sua `DATABASE_URL`:
-
-- usa host do projeto Supabase
-- inclui `?sslmode=require`
-- usa senha correta do banco
-
-### 4. `The table public.notificacao does not exist`
-
-Seu banco não recebeu a migration `003`. Rode:
-
-```powershell
-npm.cmd run db:migrate:003
-npm.cmd run db:generate
-```
-
-### 5. `The table public.usuario does not exist`
-
-Seu banco Supabase não está com o schema esperado deste projeto. Reaplique o setup de banco (schema + seeds) antes de subir a aplicação.
-
-### 6. Erro com enum `PENDENTE` ou `REPROVADA`
-
-Também indica banco parcialmente migrado. Rode:
-
-```powershell
-npm.cmd run db:migrate:003
-```
-
-## Observações
-
-- O SQL original continua sendo a fonte principal de verdade do projeto.
-- As migrations incrementais preservam o arquivo base e registram as evoluções necessárias para autenticação, notificações e fluxo de reservas.
-- O ambiente padrão agora é Supabase para facilitar colaboração entre múltiplos devs.
+Confirme que .env não aparece no git status antes de enviar alterações ao repositório.

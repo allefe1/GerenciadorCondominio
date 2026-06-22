@@ -119,8 +119,8 @@ export async function requestReservationAction(_: unknown, formData: FormData) {
   }
 
   try {
-    const area = await db.areaComum.findUnique({
-      where: { id: idAreaComum },
+    const area = await db.areaComum.findFirst({
+      where: { id: idAreaComum, deletadoEm: null },
       select: { id: true, nomeArea: true, status: true },
     });
 

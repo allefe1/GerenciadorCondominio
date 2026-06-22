@@ -49,6 +49,7 @@ export default async function MoradorReservasPage({ searchParams }: MoradorReser
     db.areaComum.findMany({
       where: {
         status: "DISPONIVEL",
+        deletadoEm: null,
         nomeArea: {
           notIn: [...NON_RESERVABLE_AREA_NAMES],
         },

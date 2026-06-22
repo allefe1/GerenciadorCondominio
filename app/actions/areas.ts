@@ -104,15 +104,17 @@ export async function upsertAreaAction(_: unknown, formData: FormData) {
   revalidatePath("/admin/areas");
   revalidatePath("/sindico/areas");
 
+  const fallbackUrl =
+    currentUser.tipoUsuario === "ADMINISTRADOR" ? "/admin/areas" : "/sindico/areas";
   const redirectUrl = formData.get("redirectUrl");
-  if (redirectUrl && typeof redirectUrl === "string") {
-    redirect(redirectUrl);
-  }
+  const safeRedirectUrl =
+    typeof redirectUrl === "string" &&
+    redirectUrl.startsWith("/") &&
+    !redirectUrl.startsWith("//")
+      ? redirectUrl
+      : fallbackUrl;
 
-  return {
-    success: true,
-    message: data.id ? "Área atualizada com sucesso." : "Área criada com sucesso.",
-  };
+  redirect(safeRedirectUrl);
 }
 
 export async function toggleAreaStatusAction(formData: FormData) {

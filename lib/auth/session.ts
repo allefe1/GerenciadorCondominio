@@ -1,6 +1,12 @@
 import { SignJWT, jwtVerify } from "jose";
 
-const secret = new TextEncoder().encode(process.env.AUTH_SECRET || "dev-secret");
+const authSecret = process.env.AUTH_SECRET;
+
+if (!authSecret || authSecret === "troque-esta-chave-em-producao") {
+  throw new Error("AUTH_SECRET precisa ser configurado com uma chave aleatória.");
+}
+
+const secret = new TextEncoder().encode(authSecret);
 
 export type SessionPayload = {
   sub: string;

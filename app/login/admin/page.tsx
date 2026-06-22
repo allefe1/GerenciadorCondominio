@@ -1,5 +1,5 @@
-import { LoginPortalPage } from "@/components/auth/login-portal-page";
+import { redirect } from "next/navigation";
 
 export default function LoginAdminPage() {
-  return <LoginPortalPage portal="ADMINISTRADOR" />;
+  redirect("/login");
 }

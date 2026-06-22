@@ -1,9 +1,9 @@
 import type { TipoUsuario } from "@prisma/client";
 
 export const loginPortalRoutes: Record<TipoUsuario, string> = {
-  MORADOR: "/login/morador",
-  ADMINISTRADOR: "/login/admin",
-  SINDICO: "/login/sindico",
+  MORADOR: "/login",
+  ADMINISTRADOR: "/login",
+  SINDICO: "/login",
 };
 
 export const loginPortalContent = {

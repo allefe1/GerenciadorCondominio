@@ -15,7 +15,17 @@ const firstAccessSchema = z.object({
 
 export async function updateFirstAccessPasswordAction(_: unknown, formData: FormData) {
   // Pega o usuário que acabou de logar (mas que ainda tem o acesso restrito)
-  const user = await requireAuthenticatedUser();
+  const user = await requireAuthenticatedUser({ allowFirstAccess: true });
+
+  if (!user.primeiroAcesso) {
+    redirect(
+      user.tipoUsuario === "MORADOR"
+        ? "/morador"
+        : user.tipoUsuario === "ADMINISTRADOR"
+          ? "/admin"
+          : "/sindico",
+    );
+  }
 
   const parsed = firstAccessSchema.safeParse({
     newPassword: formData.get("newPassword"),

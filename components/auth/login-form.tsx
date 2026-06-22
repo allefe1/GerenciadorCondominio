@@ -1,27 +1,21 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import type { TipoUsuario } from "@prisma/client";
 
 import { loginAction } from "@/app/actions/auth";
-
-type LoginFormProps = {
-  portal: TipoUsuario;
-};
 
 const initialState = {
   success: false,
   message: "",
 };
 
-export function LoginForm({ portal }: LoginFormProps) {
+export function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, initialState);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   return (
     <>
       <form action={formAction} className="space-y-5">
-        <input type="hidden" name="portal" value={portal} />
         <div className="space-y-2">
           <label className="sr-only" htmlFor="email">
             E-mail
@@ -30,6 +24,8 @@ export function LoginForm({ portal }: LoginFormProps) {
             id="email"
             name="email"
             type="email"
+            autoComplete="email"
+            required
             placeholder="E-mail"
             className="w-full rounded-[12px] border border-outline-variant/40 bg-surface-container-lowest px-5 py-4 text-sm text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           />
@@ -43,6 +39,8 @@ export function LoginForm({ portal }: LoginFormProps) {
             id="password"
             name="password"
             type="password"
+            autoComplete="current-password"
+            required
             placeholder="Senha"
             className="w-full rounded-[12px] border border-outline-variant/40 bg-surface-container-lowest px-5 py-4 text-sm text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
           />

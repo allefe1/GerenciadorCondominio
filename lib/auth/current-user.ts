@@ -21,6 +21,7 @@ export type CurrentUser = Pick<
   | "apartamento"
   | "bloco"
   | "permissoesAcesso"
+  | "primeiroAcesso"
 >;
 
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
@@ -44,6 +45,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
         apartamento: true,
         bloco: true,
         permissoesAcesso: true,
+        primeiroAcesso: true,
       },
     });
 
@@ -57,11 +59,15 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   }
 });
 
-export async function requireAuthenticatedUser() {
+export async function requireAuthenticatedUser(options: { allowFirstAccess?: boolean } = {}) {
   const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");
+  }
+
+  if (user.primeiroAcesso && !options.allowFirstAccess) {
+    redirect("/primeiro-acesso");
   }
 
   return user;

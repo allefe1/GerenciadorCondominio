@@ -1,7 +1,21 @@
 import { PrimeiroAcessoForm } from "@/components/auth/primeiro-acesso-form";
+import { requireAuthenticatedUser } from "@/lib/auth/current-user";
+import { redirect } from "next/navigation";
 // Se você tiver um componente de logo, importe-o aqui. Ex: import { Logo } from "@/components/ui/logo"
 
-export default function PrimeiroAcessoPage() {
+export default async function PrimeiroAcessoPage() {
+  const user = await requireAuthenticatedUser({ allowFirstAccess: true });
+
+  if (!user.primeiroAcesso) {
+    redirect(
+      user.tipoUsuario === "MORADOR"
+        ? "/morador"
+        : user.tipoUsuario === "ADMINISTRADOR"
+          ? "/admin"
+          : "/sindico",
+    );
+  }
+
   return (
     <main className="flex min-h-screen">
       {/* Lado Esquerdo - Branco (Formulário) */}
